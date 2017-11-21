@@ -65,7 +65,7 @@ public class TwittercheckCommand implements Command {
                 Matcher matcher = pattern.matcher(context.getRawArgs()[1]);
                 matcher.find();
                 try {
-                    Twittercheck.channel = context.getGuild().getChannelByID(Long.getLong(matcher.group(1)));
+                    Twittercheck.channel = context.getGuild().getChannelByID(Long.parseLong(matcher.group(1)));
                 } catch (Exception e) {
                     new ErrorMessage(context.getMember(), context.getRawArgs()[1] + " is not a valid channel.")
                             .sendMessage(context.getChannel());

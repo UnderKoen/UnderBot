@@ -56,7 +56,7 @@ public class LivestreamcheckCommand implements Command {
                 Matcher matcher = pattern.matcher(context.getRawArgs()[0]);
                 matcher.find();
                 try {
-                    thread.setChannel(context.getGuild().getChannelByID(Long.getLong(matcher.group(1))));
+                    thread.setChannel(context.getGuild().getChannelByID(Long.parseLong(matcher.group(1))));
                 } catch (Exception e) {
                     new ErrorMessage(context.getMember(), context.getRawArgs()[0] + " is not a valid channel.")
                             .sendMessage(context.getChannel());
