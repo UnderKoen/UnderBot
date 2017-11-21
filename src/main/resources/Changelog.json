@@ -1,5 +1,5 @@
 {
-  "ADDED":["Too much hitbox api shit", "hitbox bot", "for hitbox bot: !linkdiscord", "automatic role system"],
+  "ADDED":["remade bot for discord4j"],
   "REMOVED": [],
   "FIXED":[],
   "TODO": ["multiple guilds support","auto delete msg when stream is over", "Customize message style", "Databases for timeouts and message style"]

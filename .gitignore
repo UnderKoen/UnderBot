@@ -2,6 +2,7 @@
 gradle/
 out/
 .gradle/
+modules/
 build.gradle
 gradlew
 gradlew.bat
