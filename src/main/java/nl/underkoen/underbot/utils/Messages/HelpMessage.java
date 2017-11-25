@@ -115,7 +115,7 @@ public class HelpMessage implements UnderMessage {
             StringBuilder builder = new StringBuilder();
             roleCommands.forEach(command -> {
                 if (!(command instanceof MainCommand && subcommands)) {
-                    builder.append("**" + command.getUsage() + "** -> " + command.getDescription() + "\n");
+                    builder.append("**").append(command.getUsage()).append("** -> ").append(command.getDescription()).append("\n");
                 } else {
                     mainCommands.add(command);
                 }
@@ -124,14 +124,16 @@ public class HelpMessage implements UnderMessage {
         });
         mainCommands.forEach(command -> {
             StringBuilder builder = new StringBuilder();
-            builder.append("**" + command.getUsage() + "** -> " + command.getDescription() + "\n");
+            builder.append("**").append(command.getUsage()).append("** -> ").append(command.getDescription()).append("\n");
             if (command instanceof MainCommand && subcommands) {
                 MainCommand mainCommand = (MainCommand) command;
-                mainCommand.getSubcommands().forEach(subcommand -> {
-                    builder.append("    - **" + subcommand.getUsage().replace(Main.handler.getPrefix(),"") + "** -> " + subcommand.getDescription() + "\n");
-                });
+                mainCommand.getSubcommands().forEach(subcommand -> builder.append("    - **").append(subcommand.getUsage().replace(Main.handler.getPrefix(), "")).append("** -> ").append(subcommand.getDescription()).append("\n"));
             }
-            if (!builder.toString().isEmpty()) msg.appendField(new Embed.EmbedField(command.getCommand(), builder.toString(), false));
+            String cmdName = command.getCommand();
+            String firstLetter = ((Character) cmdName.charAt(0)).toString();
+            cmdName = cmdName.replaceFirst(firstLetter, firstLetter.toUpperCase());
+            if (!builder.toString().isEmpty())
+                msg.appendField(new Embed.EmbedField(cmdName, builder.toString(), false));
         });
 
         IMessage ms = channel.sendMessage(msg.build());

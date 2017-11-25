@@ -71,7 +71,7 @@ public class Main {
         EventDispatcher dispatcher = client.getDispatcher();
         dispatcher.registerListener(handler);
 
-        //for (Role role : jda.getGuilds().get(0).getRoles()) {
+        //for (Role role : jda.getGuilds().getFile(0).getRoles()) {
         //    System.out.println(role.getName() + " -=- " + role.getPosition());
         //}
 
@@ -86,7 +86,7 @@ public class Main {
         return  new MemberImpl(guild, client.getOurUser());
     }
 
-    public static void initializeAllCommands(String pckgname, CommandHandler handler) {
+    private static void initializeAllCommands(String pckgname, CommandHandler handler) {
         try {
             ZipInputStream zip = new ZipInputStream(new FileInputStream(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
             for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
@@ -103,14 +103,9 @@ public class Main {
                                 Command command = (Command) o;
                                 handler.initializeCommand(command);
                             }
-                        } catch (ClassNotFoundException cnfex) {
-                            System.err.println(cnfex);
-                        } catch (InstantiationException iex) {
-                            // We try to instantiate an interface
-                            // or an object that does not have a
-                            // default constructor
-                        } catch (IllegalAccessException iaex) {
-                            // The class is not public
+                        } catch (ClassNotFoundException ex) {
+                            ex.printStackTrace();
+                        } catch (InstantiationException | IllegalAccessException ignored) {
                         }
                     }
                 }
@@ -122,7 +117,7 @@ public class Main {
 
     //ugly code so i don't need to initialize every command by hand
     private static void initializeAllCommandsInDir(String pckgname, CommandHandler handler) {
-        String name = new String(pckgname);
+        String name = pckgname;
         if (!name.startsWith("/")) {
             name = "/" + name;
         }
@@ -131,29 +126,25 @@ public class Main {
         File directory = new File(url.getFile());
         if (directory.exists()) {
             String[] files = directory.list();
-            for (int i = 0; i < files.length; i++) {
-                String className = files[i];
-                if (!files[i].contains(".")) {
-                    initializeAllCommands(pckgname + "." + className, handler);
-                    continue;
-                }
-                if (files[i].endsWith(".class")) {
-                    String classname = className.substring(0, files[i].length() - 6);
-                    try {
-                        // Try to create an instance of the object
-                        Object o = Class.forName(pckgname + "." + classname).newInstance();
-                        if (o instanceof Command) {
-                            Command command = (Command) o;
-                            handler.initializeCommand(command);
+            if (files != null) {
+                for (String className : files) {
+                    if (!className.contains(".")) {
+                        initializeAllCommands(pckgname + "." + className, handler);
+                        continue;
+                    }
+                    if (className.endsWith(".class")) {
+                        String classname = className.substring(0, className.length() - 6);
+                        try {
+                            // Try to create an instance of the object
+                            Object o = Class.forName(pckgname + "." + classname).newInstance();
+                            if (o instanceof Command) {
+                                Command command = (Command) o;
+                                handler.initializeCommand(command);
+                            }
+                        } catch (ClassNotFoundException ex) {
+                            ex.printStackTrace();
+                        } catch (InstantiationException | IllegalAccessException ignored) {
                         }
-                    } catch (ClassNotFoundException cnfex) {
-                        System.err.println(cnfex);
-                    } catch (InstantiationException iex) {
-                        // We try to instantiate an interface
-                        // or an object that does not have a
-                        // default constructor
-                    } catch (IllegalAccessException iaex) {
-                        // The class is not public
                     }
                 }
             }

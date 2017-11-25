@@ -1,17 +1,14 @@
 package nl.underkoen.underbot.commands.supporter;
 
-import nl.underkoen.underbot.Main;
 import nl.underkoen.underbot.Roles;
 import nl.underkoen.underbot.commands.Command;
 import nl.underkoen.underbot.entities.CommandContext;
+import nl.underkoen.underbot.utils.FileUtil;
 import nl.underkoen.underbot.utils.Messages.TextMessage;
 import sx.blah.discord.handle.obj.IUser;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Collections;
 
 /**
  * Created by Under_Koen on 03-05-17.
@@ -44,66 +41,19 @@ public class AandachtCommand implements Command {
 
     @Override
     public void setup() throws Exception {
-        File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        file = new File(file.getParent() + "/Aandacht.txt");
-        if (!file.exists()) {
-            file.createNewFile();
-            try {
-                FileWriter fileWriter = new FileWriter(file);
-                fileWriter.write(getAandachtResource());
-                fileWriter.flush();
-                fileWriter.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        FileUtil.makeDuplicate("Aandacht.txt");
         aandacht = getAandacht();
-    }
-
-    private String getAandachtResource() {
-
-        StringBuilder result = new StringBuilder("");
-
-        //Get file from resources folder
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream file = classLoader.getResourceAsStream("Aandacht.txt");
-
-        try (Scanner scanner = new Scanner(file, "UTF-8")) {
-
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                result.append(line).append("\n");
-            }
-
-            scanner.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result.toString();
     }
 
     private ArrayList<String> getAandacht() {
 
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         try {
-            File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-            file = new File(file.getParent() + "/Aandacht.txt");
-
-            try (Scanner scanner = new Scanner(file, "UTF-8")) {
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    result.add(line);
-                }
-                scanner.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {}
-
+            Collections.addAll(result, FileUtil.getFile("Aandacht.txt").split("\n"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return result;
     }
 

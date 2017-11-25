@@ -9,13 +9,12 @@ import nl.underkoen.underbot.hitbox.Listener;
 import nl.underkoen.underbot.hitbox.Response;
 import nl.underkoen.underbot.hitbox.UserInfo;
 import nl.underkoen.underbot.threads.SupporterCheck;
+import nl.underkoen.underbot.utils.FileUtil;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.util.Scanner;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,75 +23,19 @@ import java.util.regex.Pattern;
  */
 public class LinkDiscord implements Listener {
     public LinkDiscord() throws Exception {
-        File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        file = new File(file.getParent() + "/LinkedHitbox.json");
-        if (!file.exists()) {
-            file.createNewFile();
-            try {
-                FileWriter fileWriter = new FileWriter(file);
-                fileWriter.write(getResource());
-                fileWriter.flush();
-                fileWriter.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        FileUtil.makeDuplicate("LinkedHitbox.json");
         new SupporterCheck().start();
     }
 
-    private static String getResource() {
-
-        StringBuilder result = new StringBuilder("");
-
-        //Get file from resources folder
-        ClassLoader classLoader = Main.class.getClassLoader();
-        InputStream file = classLoader.getResourceAsStream("LinkedHitbox.json");
-
-        try (Scanner scanner = new Scanner(file, "UTF-8")) {
-
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                result.append(line).append("\n");
-            }
-
-            scanner.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result.toString();
-
-    }
-
-    public static String getFile() {
-
-        StringBuilder result = new StringBuilder("");
-
-        try {
-            File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-            file = new File(file.getParent() + "/LinkedHitbox.json");
-
-            try (Scanner scanner = new Scanner(file, "UTF-8")) {
-
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    result.append(line).append("\n");
-                }
-
-                scanner.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-        }
-
-        return result.toString();
-    }
-
     public static void addUser(String discordName, String discordId, String hitboxName, boolean isSubscriber) {
-        JsonObject json = new JsonParser().parse(getFile()).getAsJsonObject();
+        JsonObject json;
+        try {
+            json = new JsonParser().parse(FileUtil.getFile("LinkedHitbox.json")).getAsJsonObject();
+        } catch (FileNotFoundException | URISyntaxException e) {
+            e.printStackTrace();
+            return;
+
+        }
         for (JsonElement jsonE : json.getAsJsonArray("linked")) {
             if (jsonE.getAsJsonObject().get("hitboxName").getAsString().equalsIgnoreCase(hitboxName)) {
                 json.getAsJsonArray("linked").remove(jsonE);
@@ -107,12 +50,7 @@ public class LinkDiscord implements Listener {
         json.getAsJsonArray("linked").add(linked);
 
         try {
-            File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-            file = new File(file.getParent() + "/LinkedHitbox.json");
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(json.toString());
-            fileWriter.flush();
-            fileWriter.close();
+            FileUtil.updateFile("LinkedHitbox.json", json.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,6 +77,7 @@ public class LinkDiscord implements Listener {
                 }
                 if (hit == null) {
                     Main.hitboxUtil.sendMessage("@" + user.getName() + ", we couldn't find you on discord. is your name and tag correct?", Color.RED);
+                    return;
                 }
 
                 String hitboxName = user.getName();

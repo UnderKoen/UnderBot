@@ -3,9 +3,11 @@ package nl.underkoen.underbot.commands.general;
 import nl.underkoen.underbot.Main;
 import nl.underkoen.underbot.commands.Command;
 import nl.underkoen.underbot.entities.CommandContext;
+import nl.underkoen.underbot.utils.Messages.ErrorMessage;
 import nl.underkoen.underbot.utils.Messages.TextMessage;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 /**
@@ -15,7 +17,6 @@ public class VersionCommand implements Command {
     private String command = "versions";
     private String usage = "/versions";
     private String description = "Returns all the versions of the bot.";
-    private ArrayList<String> versions = new ArrayList<String>();
 
     @Override
     public String getCommand() {
@@ -33,19 +34,27 @@ public class VersionCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-        File folder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        folder = new File(folder.getParent() + "/Changelogs");
-        File[] listOfFiles = folder.listFiles();
-
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (!listOfFiles[i].isFile()) continue;
-            versions.add(listOfFiles[i].getName().replace("Changelog_", "").replace(".json", ""));
-        }
+    public void setup() {
     }
 
     @Override
-    public void run(CommandContext context) {
+    public void run(CommandContext context) throws URISyntaxException {
+        //TODO
+        ArrayList<String> versions = new ArrayList<>();
+
+        File folder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        folder = new File(folder.getParent() + "/Changelogs");
+        File[] listOfFiles = folder.listFiles();
+        if (listOfFiles == null) {
+            new ErrorMessage(context.getMember(), "There are no versions. weird.").sendMessage(context.getChannel());
+            return;
+        }
+
+        for (File listOfFile : listOfFiles) {
+            if (!listOfFile.isFile()) continue;
+            versions.add(listOfFile.getName().replace("Changelog_", "").replace(".json", ""));
+        }
+
         StringBuilder str = new StringBuilder();
         for (String version : versions) {
             str.append("- ").append(version).append("\n");

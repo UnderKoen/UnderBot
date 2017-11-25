@@ -11,10 +11,10 @@ import java.util.List;
  * Created by Under_Koen on 21-07-17.
  */
 public class Minesweeper {
-    public static List<Minesweeper> games = new ArrayList<>();
+    private static List<Minesweeper> games = new ArrayList<>();
 
-    Member owner;
-    Map map;
+    private Member owner;
+    private Map map;
 
     public Minesweeper(Member owner) {
         this.owner = owner;
@@ -27,15 +27,14 @@ public class Minesweeper {
         for (Minesweeper game: games) {
             if (game.getOwner() == owner) return game;
         }
-        return null;
+        return new Minesweeper(owner);
     }
 
     public Map getMap() {
         return map;
     }
 
-    public Member getOwner() {
-
+    private Member getOwner() {
         return owner;
     }
 

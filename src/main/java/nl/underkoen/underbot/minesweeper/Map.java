@@ -18,8 +18,8 @@ public class Map {
 
     private final int AMOUNT_OF_BOMBS = 10;
 
-    public Map() {
-        outline = new HashMap<Location, TileType>();
+    Map() {
+        outline = new HashMap<>();
         for (int y = -2; y < 9; y++) {
             for (int x = -2; x < 9; x++) {
                 if (x >= 0 && y >= 0) continue;
@@ -92,7 +92,7 @@ public class Map {
     }
 
     private void updateMap() {
-        visibleMap = new HashMap<Location, TileType>();
+        visibleMap = new HashMap<>();
         visibleMap.putAll(map);
         visibleMap.putAll(outline);
     }
@@ -118,7 +118,7 @@ public class Map {
         updateMap();
     }
 
-    public List<Location> getTilesAroundTile(Location loc) {
+    private List<Location> getTilesAroundTile(Location loc) {
         ArrayList<Location> tiles = new ArrayList<>();
         int x = loc.getX();
         int y = loc.getY();
@@ -131,7 +131,7 @@ public class Map {
         return tiles;
     }
 
-    public Location getLocationFromOutline(int x, int y) {
+    private Location getLocationFromOutline(int x, int y) {
         for (Location loc : outline.keySet()) {
             if (loc.getX() == x && loc.getY() == y) return loc;
         }
@@ -146,14 +146,14 @@ public class Map {
         return null;
     }
 
-    public Location getLocationFromCompletedMap(int x, int y) {
+    private Location getLocationFromCompletedMap(int x, int y) {
         for (Location loc : completedMap.keySet()) {
             if (loc.getX() == x && loc.getY() == y) return loc;
         }
         return null;
     }
 
-    public String toMessage() {
+    String toMessage() {
         StringBuilder string = new StringBuilder();
         for (int y = -2; y < 9; y++) {
             for (int x = -2; x < 9; x++) {

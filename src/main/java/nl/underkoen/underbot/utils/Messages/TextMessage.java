@@ -49,6 +49,12 @@ public class TextMessage implements UnderMessage {
         if (fields == null) {
             fields = new ArrayList<>();
         }
+        if (name == null || name.isEmpty()) {
+            name = "\u200E";
+        }
+        if (value == null || value.isEmpty()) {
+            value = "\u200E";
+        }
         fields.add(new Embed.EmbedField(name, value, inline));
         return this;
     }

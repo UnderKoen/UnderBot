@@ -9,6 +9,7 @@ import nl.underkoen.underbot.commands.hitbox.LinkDiscord;
 import nl.underkoen.underbot.entities.Member;
 import nl.underkoen.underbot.entities.impl.MemberImpl;
 import nl.underkoen.underbot.hitbox.UserInfo;
+import nl.underkoen.underbot.utils.FileUtil;
 import nl.underkoen.underbot.utils.RoleUtil;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IRole;
@@ -25,7 +26,7 @@ public class SupporterCheck extends Thread {
     public void run() {
         while (true) {
             try {
-                JsonObject json = new JsonParser().parse(LinkDiscord.getFile()).getAsJsonObject();
+                JsonObject json = new JsonParser().parse(FileUtil.getFile("LinkedHitbox.json")).getAsJsonObject();
                 for (JsonElement jsonE : json.getAsJsonArray("linked")) {
                     JsonObject linked = jsonE.getAsJsonObject();
                     UserInfo userInfo = Main.hitboxUtil.getUserInfo(linked.get("hitboxName").getAsString());
@@ -47,7 +48,7 @@ public class SupporterCheck extends Thread {
                                 member.getGuild().editUserRoles(member.getUser(), (IRole[]) roles.toArray());
                             }
                         }
-                    } else if (isSubscriber != isSubscriberbefore) {
+                    } else if (isSubscriberbefore) {
                         IGuild guild = Main.client.getGuilds().get(0);
                         IUser user = getUser(discordName, discordId);
                         if (user != null) {
@@ -62,7 +63,7 @@ public class SupporterCheck extends Thread {
                     }
                 }
                 sleep(TimeUnit.MINUTES.toMillis(30));
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
