@@ -1,15 +1,20 @@
 package nl.underkoen.underbot.commands.hitbox;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import nl.underkoen.underbot.Main;
+import nl.underkoen.underbot.Roles;
 import nl.underkoen.underbot.hitbox.ChatMsg;
 import nl.underkoen.underbot.hitbox.Listener;
 import nl.underkoen.underbot.hitbox.Response;
 import nl.underkoen.underbot.hitbox.UserInfo;
 import nl.underkoen.underbot.threads.SupporterCheck;
 import nl.underkoen.underbot.utils.FileUtil;
+import nl.underkoen.underbot.utils.RoleUtil;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.awt.*;
@@ -24,11 +29,11 @@ import java.util.regex.Pattern;
 public class LinkDiscord implements Listener {
     public LinkDiscord() throws Exception {
         FileUtil.makeDuplicate("LinkedHitbox.json");
-        new SupporterCheck().start();
     }
 
-    public static void addUser(String discordName, String discordId, String hitboxName, boolean isSubscriber) {
+    public static void addUser(String discordName, String discordId, String hitboxName) {
         JsonObject json;
+        JsonObject newJson = new JsonObject();
         try {
             json = new JsonParser().parse(FileUtil.getFile("LinkedHitbox.json")).getAsJsonObject();
         } catch (FileNotFoundException | URISyntaxException e) {
@@ -36,24 +41,77 @@ public class LinkDiscord implements Listener {
             return;
 
         }
+        JsonArray jsonArray = new JsonArray();
         for (JsonElement jsonE : json.getAsJsonArray("linked")) {
-            if (jsonE.getAsJsonObject().get("hitboxName").getAsString().equalsIgnoreCase(hitboxName)) {
-                json.getAsJsonArray("linked").remove(jsonE);
-                break;
+            if (!jsonE.getAsJsonObject().get("hitboxName").getAsString().equalsIgnoreCase(hitboxName)) {
+                jsonArray.add(jsonE);
             }
         }
         JsonObject linked = new JsonObject();
         linked.addProperty("discordName", discordName);
         linked.addProperty("discordId", discordId);
         linked.addProperty("hitboxName", hitboxName);
-        linked.addProperty("isSubscriber", isSubscriber);
-        json.getAsJsonArray("linked").add(linked);
+        jsonArray.add(linked);
+        newJson.add("linked", jsonArray);
 
         try {
-            FileUtil.updateFile("LinkedHitbox.json", json.toString());
+            FileUtil.updateFile("LinkedHitbox.json", newJson.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static IUser getUser(String hitboxName) {
+        try {
+            String jsonString = FileUtil.getFile("LinkedHitbox.json");
+            JsonParser parser = new JsonParser();
+            JsonElement jsonElement = parser.parse(jsonString);
+            JsonObject json = jsonElement.getAsJsonObject();
+            JsonArray users = json.getAsJsonArray("linked");
+            for (JsonElement userEl : users) {
+                JsonObject user = userEl.getAsJsonObject();
+                if (user.get("hitboxName").getAsString().equalsIgnoreCase(hitboxName)) {
+                    return getUser(user.get("discordName").getAsString(), user.get("discordId").getAsString());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static IUser getUser(String name, String id) {
+        IUser hit = null;
+        for (IUser user : Main.client.getUsersByName(name, true)) {
+            if (user.getDiscriminator().equalsIgnoreCase(id)) {
+                hit = user;
+                break;
+            }
+        }
+        return hit;
+    }
+
+    public static void giveSupporter(String hitboxName) {
+        try {
+            IUser user = getUser(hitboxName);
+            IGuild guild = Main.client.getGuilds().get(0);
+            IRole role = RoleUtil.getRole(guild, Roles.SUPER_SUPPORTER_HITBOX.role);
+            if (Main.hitboxUtil.isSubscriber(hitboxName)) {
+                if (!user.hasRole(role)) {
+                    user.addRole(role);
+                }
+            } else {
+                if (user.hasRole(role)) {
+                    user.removeRole(role);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setup() {
+        new SupporterCheck().start();
     }
 
     @Override
@@ -83,7 +141,10 @@ public class LinkDiscord implements Listener {
                 String hitboxName = user.getName();
                 boolean isSubscriber = user.isSubscriber();
 
-                addUser(discordName, discordId, hitboxName, isSubscriber);
+                addUser(discordName, discordId, hitboxName);
+                if (isSubscriber) {
+                    giveSupporter(hitboxName);
+                }
                 Main.hitboxUtil.sendMessage("@" + user.getName() + ", Linked your hitbox account to your discord account", Color.RED);
             } catch (Exception ex) {
                 Main.hitboxUtil.sendMessage("@" + user.getName() + ", the correct way is !discordlink @(DiscordName)#(Discord Tag)", Color.RED);

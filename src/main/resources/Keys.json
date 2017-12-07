@@ -9,6 +9,10 @@
   },
   "hitbox": {
     "name": "",
-    "pass": ""
+    "pass": "",
+    "supporterCheck": {
+      "user": "",
+      "auth": ""
+    }
   }
 }

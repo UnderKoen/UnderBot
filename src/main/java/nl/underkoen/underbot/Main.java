@@ -12,10 +12,12 @@ import org.apache.commons.io.FileUtils;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
+import sx.blah.discord.handle.impl.events.shard.LoginEvent;
 import sx.blah.discord.handle.obj.IGuild;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -33,7 +35,7 @@ public class Main {
 
     public static KeyLoaderUtil keys;
 
-    public static String version = "0.3.2";
+    public static String version = "0.3.5";
 
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
@@ -70,6 +72,15 @@ public class Main {
         client = clientBuilder.login();
         EventDispatcher dispatcher = client.getDispatcher();
         dispatcher.registerListener(handler);
+        dispatcher.registerTemporaryListener(event -> {
+            if (event instanceof LoginEvent) {
+                try {
+                    hitboxUtil.setup();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         //for (Role role : jda.getGuilds().getFile(0).getRoles()) {
         //    System.out.println(role.getName() + " -=- " + role.getPosition());

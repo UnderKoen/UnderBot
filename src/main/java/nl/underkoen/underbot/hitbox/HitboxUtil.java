@@ -45,7 +45,7 @@ public class HitboxUtil {
 
     private ExecutorService listenersThread;
 
-    public HitboxUtil() throws IOException {
+    public void setup() throws IOException {
         token = getToken();
         sites = getSites();
         sock = setupSocket();
@@ -54,12 +54,16 @@ public class HitboxUtil {
             listenersThread.submit(() -> {
                 if (getMethod(args[0].toString()).equalsIgnoreCase("chatMsg")) {
                     JsonObject json = new JsonParser().parse(args[0].toString()).getAsJsonObject();
-                    //System.out.println(json);
                     if (json.getAsJsonObject("params").get("text").getAsString().startsWith("!linkdiscord")) {
                         Response response = StringToResponseObject(args[0].toString());
                         for (Listener listener : listeners) {
                             listener.onEvent(response);
                         }
+                    }
+                }
+                if (getMethod(args[0].toString()).equalsIgnoreCase("loginMsg")) {
+                    for (Listener listener : listeners) {
+                        listener.setup();
                     }
                 }
             });
@@ -78,13 +82,30 @@ public class HitboxUtil {
         connection.setDoOutput(true);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         try (DataOutputStream os = new DataOutputStream(connection.getOutputStream())) {
-            String content = "login=" + "underbot" + "&pass=makertim123";
+            String content = "login=" + Main.keys.getHitboxName() + "&pass=" + Main.keys.getHitboxPass();
             os.writeBytes(content);
             os.flush();
         }
         try (DataInputStream is = new DataInputStream(connection.getInputStream())) {
             return new JSONObject(is.readLine()).get("authToken").toString();
         }
+    }
+
+    private String getSubscribers() throws IOException {
+        CloseableHttpClient client = HttpClientBuilder.create().build();
+        CloseableHttpResponse response = client.execute(
+                new HttpGet("https://api.smashcast.tv/subscriberlist/" + Main.keys.getSupporterUser() + "?authToken=" + Main.keys.getSupporterAuth())
+        );
+        HttpEntity entity = response.getEntity();
+        return EntityUtils.toString(entity);
+    }
+
+    public boolean isSubscriber(String user) throws IOException {
+        JsonObject json = new JsonParser().parse(getSubscribers()).getAsJsonObject();
+        for (JsonElement element : json.getAsJsonArray("subscribers")) {
+            if (element.getAsJsonObject().get("user_name").getAsString().equals(user)) return true;
+        }
+        return false;
     }
 
     private JsonArray getSites() throws IOException {
@@ -124,6 +145,9 @@ public class HitboxUtil {
             sock.disconnect().close();
             this.sock = setupSocket();
         }).on(Socket.EVENT_ERROR, args -> {
+            sock.disconnect().close();
+            this.sock = setupSocket();
+        }).on(Socket.EVENT_CONNECT_TIMEOUT, args -> {
             sock.disconnect().close();
             this.sock = setupSocket();
         }).on(Socket.EVENT_RECONNECT_ERROR, args -> {
@@ -192,7 +216,6 @@ public class HitboxUtil {
             public void call(Object... args) {
                 if (getMethod(args[0].toString()).equals("userInfo")) {
                     JsonObject json = new JsonParser().parse(args[0].toString()).getAsJsonObject();
-                    //System.out.println(json);
                     if (json.getAsJsonObject("params").get("name").getAsString().equalsIgnoreCase(userName)) {
                         UserInfo userInfo = getUserInfo(json);
                         userInfos.put(uuid, userInfo);
@@ -210,7 +233,7 @@ public class HitboxUtil {
         sock.send(request);
         while (!userInfos.containsKey(uuid)) {
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(10));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(1));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

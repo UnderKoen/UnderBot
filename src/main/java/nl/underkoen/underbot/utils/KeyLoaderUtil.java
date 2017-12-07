@@ -28,8 +28,17 @@ public class KeyLoaderUtil {
     public String getHitboxName() {
         return keys.getAsJsonObject("hitbox").get("name").getAsString();
     }
+
     public String getHitboxPass() {
         return keys.getAsJsonObject("hitbox").get("pass").getAsString();
+    }
+
+    public String getSupporterUser() {
+        return keys.getAsJsonObject("hitbox").getAsJsonObject("supporterCheck").get("user").getAsString();
+    }
+
+    public String getSupporterAuth() {
+        return keys.getAsJsonObject("hitbox").getAsJsonObject("supporterCheck").get("auth").getAsString();
     }
 
     /**
