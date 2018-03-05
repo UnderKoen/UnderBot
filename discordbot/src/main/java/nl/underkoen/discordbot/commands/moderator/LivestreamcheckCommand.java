@@ -43,6 +43,12 @@ public class LivestreamcheckCommand implements Command {
     }
 
     @Override
+    public void stop() throws Exception {
+        thread.stopCheck();
+        checking = false;
+    }
+
+    @Override
     public void setup() throws Exception {
     }
 

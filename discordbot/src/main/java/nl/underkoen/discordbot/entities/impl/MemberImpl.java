@@ -6,6 +6,7 @@ import sx.blah.discord.handle.obj.*;
 
 import java.awt.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public class MemberImpl implements Member {
 
     @Override
     public LocalDateTime getJoinDate() {
-        return guild.getJoinTimeForUser(user);
+        return LocalDateTime.ofInstant(guild.getJoinTimeForUser(user), ZoneOffset.UTC);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class MemberImpl implements Member {
 
     @Override
     public Optional<String> getGame() {
-        return user.getPresence().getPlayingText();
+        return user.getPresence().getText();
     }
 
     @Override

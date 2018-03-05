@@ -32,7 +32,7 @@ public class FileUtilOld {
         updateFile(getFile(fileName), text);
     }
 
-    public static void updateFile(File file, String text) throws URISyntaxException, IOException {
+    public static void updateFile(File file, String text) throws IOException {
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(text);
         fileWriter.flush();

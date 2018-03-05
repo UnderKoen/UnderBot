@@ -1,5 +1,6 @@
 package nl.underkoen.discordbot.utils.Messages;
 
+import nl.underkoen.discordbot.Main;
 import nl.underkoen.discordbot.entities.Member;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IEmbed.IEmbedField;
@@ -9,7 +10,6 @@ import sx.blah.discord.util.EmbedBuilder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
  * Created by Under_Koen on 19-04-17.
  */
 public interface UnderMessage {
-
     default Color getColor() {
         return null;
     }
@@ -77,7 +76,7 @@ public interface UnderMessage {
 
         IMessage ms = channel.sendMessage(msg.build());
 
-        new Timer().schedule(
+        Main.timer.schedule(
                 new TimerTask() {
                     @Override
                     public void run() {

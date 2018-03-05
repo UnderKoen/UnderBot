@@ -1,11 +1,14 @@
 package nl.underkoen.underbot.utils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import nl.underkoen.underbot.models.Module;
 import nl.underkoen.underbot.models.Usage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 /**
  * Created by Under_Koen on 11/01/2018.
@@ -48,6 +51,56 @@ public class MessageBuilder {
         json.addProperty("method", "logMessage");
         JsonObject params = new JsonObject();
         params.addProperty("log", FileUtilOld.getFileInput(log));
+        json.add("params", params);
+        return json.toString();
+    }
+
+    public static String getModulesMessage(Map<Long, Module> modules) {
+        JsonObject json = new JsonObject();
+        json.addProperty("method", "modulesMessage");
+        JsonObject params = new JsonObject();
+        JsonArray modulesJ = new JsonArray();
+        modules.forEach((aLong, module) -> {
+            Boolean canStart = false;
+            Boolean canStop = false;
+            Boolean canRestart = false;
+            switch (module.getStatus()) {
+                case NONE:
+                    canStart = true;
+                    break;
+                case INITIALIZING:
+                    break;
+                case RUNNING:
+                    canStop = true;
+                    canRestart = true;
+                    break;
+                case STOPPED:
+                    canStart = true;
+                    break;
+                case CRASHED:
+                    canStart = true;
+                    break;
+            }
+            JsonObject moduleJ = new JsonObject();
+            moduleJ.addProperty("name", module.getModuleInfo().name);
+            moduleJ.addProperty("id", aLong.toString());
+            moduleJ.addProperty("status", module.getStatus().name());
+            moduleJ.addProperty("upSince", module.getUpSince());
+            moduleJ.addProperty("canStart", canStart);
+            moduleJ.addProperty("canStop", canStop);
+            moduleJ.addProperty("canRestart", canRestart);
+            modulesJ.add(moduleJ);
+        });
+        params.add("modules", modulesJ);
+        json.add("params", params);
+        return json.toString();
+    }
+
+    public static String getLoginMessage(boolean succes) {
+        JsonObject json = new JsonObject();
+        json.addProperty("method", "login");
+        JsonObject params = new JsonObject();
+        params.addProperty("succes", succes);
         json.add("params", params);
         return json.toString();
     }

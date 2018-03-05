@@ -10,10 +10,7 @@ import nl.underkoen.discordbot.utils.RoleUtil;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,9 +35,18 @@ public class CommandHandler {
         }
     }
 
+    public void stopAll() {
+        commands.forEach((s, command) -> {
+            try {
+                command.stop();
+            } catch (Exception e) {
+            }
+        });
+    }
+
     @EventSubscriber
     public void onReady(ReadyEvent event) {
-        Main.client.changePlayingText("/help -> for help");
+        Main.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, "/help -> for help");
         for (Command command : commands.values()) {
             try {
                 command.setup();

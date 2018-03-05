@@ -1,5 +1,6 @@
 package nl.underkoen.discordbot.utils.Messages;
 
+import nl.underkoen.discordbot.Main;
 import nl.underkoen.discordbot.utils.ColorUtil;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -71,7 +72,7 @@ public class TwitterMessage implements UnderMessage {
 
         IMessage ms = channel.sendMessage(msg.build());
 
-        new java.util.Timer().schedule(
+        Main.timer.schedule(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {

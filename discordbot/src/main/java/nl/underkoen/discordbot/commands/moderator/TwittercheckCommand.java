@@ -51,6 +51,12 @@ public class TwittercheckCommand implements Command {
     }
 
     @Override
+    public void stop() throws Exception {
+        Twittercheck.check = false;
+        Twittercheck.start(consumerKey, consumerSecret, token, tokenSecret);
+    }
+
+    @Override
     public void run(CommandContext context) throws Exception {
         if (context.getRawArgs().length < 1 && !Twittercheck.check) {
             new ErrorMessage(context.getMember(), "This command needs arguments to work.")

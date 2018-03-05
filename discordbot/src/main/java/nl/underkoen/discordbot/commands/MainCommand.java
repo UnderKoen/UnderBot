@@ -26,6 +26,14 @@ public interface MainCommand extends Command {
     }
 
     @Override
+    default void stop() throws Exception {
+        List<Command> commands = getSubcommands();
+        for (Command command : commands) {
+            command.stop();
+        }
+    }
+
+    @Override
     default void run(CommandContext context) throws Exception {
         List<Command> subcommands = getSubcommands();
         if (context.getArgs().length == 0) {

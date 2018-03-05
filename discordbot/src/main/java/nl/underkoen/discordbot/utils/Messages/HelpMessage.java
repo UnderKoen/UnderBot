@@ -139,7 +139,7 @@ public class HelpMessage implements UnderMessage {
 
         IMessage ms = channel.sendMessage(msg.build());
 
-        new java.util.Timer().schedule(
+        Main.timer.schedule(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {

@@ -1,9 +1,11 @@
 {
-  "ADDED": [],
-  "REMOVED": [],
-  "FIXED": [
-    "fixed supportercheck"
+  "ADDED": [
+    "fancy underbot things"
   ],
+  "REMOVED": [
+    "hitbox shit"
+  ],
+  "FIXED": [],
   "TODO": [
     "multiple guilds support",
     "auto delete msg when stream is over",

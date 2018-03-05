@@ -21,7 +21,11 @@ public interface Command {
         return Roles.EVERYONE.role;
     }
 
-    void setup() throws Exception;
+    default void setup() throws Exception {
+    }
+
+    default void stop() throws Exception {
+    }
 
     void run(CommandContext context) throws Exception;
 }

@@ -1,12 +1,12 @@
 package nl.underkoen.underbot.utils;
 
 import com.corundumstudio.socketio.SocketIOServer;
+import nl.underkoen.underbot.Main;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * Created by Under_Koen on 11/01/2018.
@@ -17,8 +17,10 @@ public class WebPrintStream extends PrintStream {
     private static File getLogFile() {
         try {
             File file = FileUtilOld.getFile("logs");
-            file.mkdir();
-            file = FileUtilOld.getFile("logs/log_" + new Timestamp(new Date().getTime()) + ".log");
+            if (!file.exists()) file.mkdir();
+            String time = new Timestamp(System.currentTimeMillis()).toString();
+            time = time.replace(":", "-");
+            file = new File(file.getPath() + "/log_" + time + ".log");
             file.createNewFile();
             return file;
         } catch (Exception e) {
@@ -44,7 +46,9 @@ public class WebPrintStream extends PrintStream {
 
                     public void logLine(String line) {
                         server.getAllClients().forEach(client -> {
-                            client.sendEvent("message", MessageBuilder.getConsoleMessage(line, type));
+                            if (Main.socketHandler.getLoggedIn().get(client.getSessionId())) {
+                                client.sendEvent("message", MessageBuilder.getConsoleMessage(line, type));
+                            }
                         });
                         try {
                             FileUtilOld.updateFile(logFile, FileUtilOld.getFileInput(logFile) + type.name.toUpperCase() + ": " + line);
