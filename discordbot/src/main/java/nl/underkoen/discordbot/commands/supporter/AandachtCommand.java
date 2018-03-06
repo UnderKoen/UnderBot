@@ -1,10 +1,10 @@
 package nl.underkoen.discordbot.commands.supporter;
 
+import nl.underkoen.discordbot.Main;
 import nl.underkoen.discordbot.Roles;
 import nl.underkoen.discordbot.commands.Command;
 import nl.underkoen.discordbot.entities.CommandContext;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
-import nl.underkoen.underbot.utils.FileUtilOld;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class AandachtCommand implements Command {
 
     @Override
     public void setup() throws Exception {
-        FileUtilOld.makeDuplicate("Aandacht.txt");
+        Main.main.getModuleFileUtil().copyResourceToPersonalDir("Aandacht.txt");
         aandacht = getAandacht();
     }
 
@@ -50,7 +50,7 @@ public class AandachtCommand implements Command {
         ArrayList<String> result = new ArrayList<>();
 
         try {
-            Collections.addAll(result, FileUtilOld.getFileInput("Aandacht.txt").split("\n"));
+            Collections.addAll(result, Main.main.getModuleFileUtil().getContent("Aandacht.txt").split("\n"));
         } catch (Exception e) {
             e.printStackTrace();
         }

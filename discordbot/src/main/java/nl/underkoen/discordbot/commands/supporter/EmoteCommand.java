@@ -2,12 +2,12 @@ package nl.underkoen.discordbot.commands.supporter;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import nl.underkoen.discordbot.Main;
 import nl.underkoen.discordbot.Roles;
 import nl.underkoen.discordbot.commands.Command;
 import nl.underkoen.discordbot.entities.CommandContext;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
-import nl.underkoen.underbot.utils.FileUtilOld;
 
 /**
  * Created by Under_Koen on 02-05-17.
@@ -40,7 +40,7 @@ public class EmoteCommand implements Command {
 
     @Override
     public void setup() throws Exception {
-        FileUtilOld.makeDuplicate("Emote.json");
+        Main.main.getModuleFileUtil().copyResourceToPersonalDir("Emote.json");
     }
 
     @Override
@@ -57,7 +57,7 @@ public class EmoteCommand implements Command {
         args = new StringBuilder(args.toString().trim().toLowerCase());
         StringBuilder text = new StringBuilder();
         JsonParser parser = new JsonParser();
-        JsonObject o = parser.parse(FileUtilOld.getFileInput("Emote.Json")).getAsJsonObject();
+        JsonObject o = parser.parse(Main.main.getModuleFileUtil().getContent("Emote.Json")).getAsJsonObject();
         TextMessage msg = new TextMessage().setMention(context.getMember());
         for (char Char : args.toString().toCharArray()) {
             String add = (o.has(Char + "")) ? o.get(Char + "").getAsString() : o.get("none").getAsString();

@@ -8,7 +8,6 @@ import nl.underkoen.discordbot.commands.Command;
 import nl.underkoen.discordbot.entities.CommandContext;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
-import nl.underkoen.underbot.utils.FileUtilOld;
 
 /**
  * Created by Under_Koen on 23-04-17.
@@ -35,11 +34,11 @@ public class ChangelogCommand implements Command {
 
     @Override
     public void setup() throws Exception {
-        FileUtilOld.makeDuplicate("Changelog.json", "Changelogs/Changelog_" + Main.version + ".json");
+        Main.main.getModuleFileUtil().copyResourceToPersonalDir("Changelog.json", "Changelogs/Changelog_" + Main.version + ".json");
     }
 
     private String getChangelog(String version) throws Exception {
-        return FileUtilOld.getFileInput("/Changelogs/Changelog_" + version + ".json");
+        return Main.main.getModuleFileUtil().getContent("/Changelogs/Changelog_" + version + ".json");
     }
 
     @Override

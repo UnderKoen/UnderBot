@@ -9,17 +9,16 @@ import nl.underkoen.discordbot.utils.KeyLoaderUtil;
 import nl.underkoen.underbot.models.Module;
 import nl.underkoen.underbot.models.ModuleInfo;
 import nl.underkoen.underbot.models.Status;
-import org.apache.commons.io.FileUtils;
+import nl.underkoen.underbot.utils.ModuleFileUtil;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.modules.Configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.Timer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -35,54 +34,11 @@ public class Main extends Module {
 
     public static String version = "0.3.6";
 
-    public Main(ModuleInfo moduleInfo) {
-        super(moduleInfo);
-    }
+    public static Main main;
 
-    public static void main(String[] args) throws Exception {
-        new Main(null).init();
-        /*
-        if (args.length == 0) {
-            File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-            file = new File(file.getParent() + "/Keys.json");
-            if (!file.exists()) {
-                file.createNewFile();
-                try {
-                    InputStream input = Main.class.getClassLoader().getResourceAsStream("Keys.json");
-                    FileUtils.copyInputStreamToFile(input, file);
-                    System.out.println("You need to hava a Keys.json file or a path to a Keys.json file as arg.");
-                    System.out.println("Created a Keys.json.");
-                    return;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-            }
-            keys = new KeyLoaderUtil(FileUtils.readFileToString(file, Charset.defaultCharset()));
-        } else {
-            File file = new File(args[0]);
-            if (!file.exists()) {
-                System.out.print("You need to hava a Keys.json file or a path to a Keys.json file as arg.");
-                return;
-            }
-            keys = new KeyLoaderUtil(FileUtils.readFileToString(file, Charset.defaultCharset()));
-        }
-
-        handler = new CommandHandler("/");
-
-        ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.withToken(keys.getDiscordKey());
-        client = clientBuilder.login();
-        EventDispatcher dispatcher = client.getDispatcher();
-        dispatcher.registerListener(handler);
-
-        //for (Role role : jda.getGuilds().getFileInput(0).getRoles()) {
-        //    System.out.println(role.getName() + " -=- " + role.getPosition());
-        //}
-
-        initializeAllCommands("nl.underkoen.discordbot.commands", handler);
-        handler.initializeCommand(new MusicCommand());
-        handler.initializeCommand(new MinesweeperCommand());*/
+    public Main(ModuleInfo moduleInfo, ModuleFileUtil moduleFileUtil) {
+        super(moduleInfo, moduleFileUtil);
+        Main.main = this;
     }
 
     public static Member getSelfMember(IGuild guild) {
@@ -162,37 +118,37 @@ public class Main extends Module {
 
         //TODO not hardcoded
         //String[] args = {"/Users/koen/Desktop/Programmeren/Java/UnderBot/keys/test_discord_keys.json"};
-        String[] args = {};
 
         try {
-            if (args.length == 0) {
-                File file = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-                file = new File(file.getParent() + "/Keys.json");
-                if (!file.exists()) {
-                    file.createNewFile();
-                    try {
-                        InputStream input = Main.class.getClassLoader().getResourceAsStream("Keys.json");
-                        FileUtils.copyInputStreamToFile(input, file);
-                        System.out.println("You need to hava a Keys.json file or a path to a Keys.json file as arg.");
-                        System.out.println("Created a Keys.json.");
-                        return false;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return false;
-                    }
+            //if (args.length == 0) {
+            File file = getModuleFileUtil().getFileInPersonalDir("Keys.json");
+            if (!file.exists()) {
+                file.createNewFile();
+                try {
+                    getModuleFileUtil().copyResourceToPersonalDir("Keys.json");
+                    System.out.println("You need to hava a Keys.json file or a path to a Keys.json file as arg.");
+                    System.out.println("Created a Keys.json.");
+                    return false;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
                 }
-                keys = new KeyLoaderUtil(FileUtils.readFileToString(file, Charset.defaultCharset()));
-            } else {
+            }
+            keys = new KeyLoaderUtil(getModuleFileUtil().getContent(file));
+            /*} else {
                 File file = new File(args[0]);
                 if (!file.exists()) {
                     System.out.print("You need to hava a Keys.json file or a path to a Keys.json file as arg.");
                     return false;
                 }
                 keys = new KeyLoaderUtil(FileUtils.readFileToString(file, Charset.defaultCharset()));
-            }
+            }*/
         } catch (Exception e) {
             return false;
         }
+
+        Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
+        Configuration.LOAD_EXTERNAL_MODULES = false;
 
         handler = new CommandHandler("/");
 

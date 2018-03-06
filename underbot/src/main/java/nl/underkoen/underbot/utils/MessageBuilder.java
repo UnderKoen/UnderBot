@@ -2,6 +2,7 @@ package nl.underkoen.underbot.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import nl.underkoen.underbot.Main;
 import nl.underkoen.underbot.models.Module;
 import nl.underkoen.underbot.models.Usage;
 
@@ -50,7 +51,7 @@ public class MessageBuilder {
         JsonObject json = new JsonObject();
         json.addProperty("method", "logMessage");
         JsonObject params = new JsonObject();
-        params.addProperty("log", FileUtilOld.getFileInput(log));
+        params.addProperty("log", Main.assetHandler.fileUtil.getContent(log));
         json.add("params", params);
         return json.toString();
     }
@@ -82,7 +83,7 @@ public class MessageBuilder {
                     break;
             }
             JsonObject moduleJ = new JsonObject();
-            moduleJ.addProperty("name", module.getModuleInfo().name);
+            moduleJ.addProperty("name", module.getModuleInfo().getName());
             moduleJ.addProperty("id", aLong.toString());
             moduleJ.addProperty("status", module.getStatus().name());
             moduleJ.addProperty("upSince", module.getUpSince());

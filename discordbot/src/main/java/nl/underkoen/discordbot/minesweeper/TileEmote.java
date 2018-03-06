@@ -1,26 +1,18 @@
 package nl.underkoen.discordbot.minesweeper;
 
 import com.google.gson.JsonParser;
-import nl.underkoen.underbot.utils.FileUtilOld;
-
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
+import nl.underkoen.discordbot.Main;
 
 /**
  * Created by Under_Koen on 21-07-17.
  */
 public class TileEmote {
     public static void createFile() throws Exception {
-        FileUtilOld.makeDuplicate("TileEmotesMinesweeper.json");
+        Main.main.getModuleFileUtil().copyResourceToPersonalDir("TileEmotesMinesweeper.json");
     }
 
     static String getTileEmote(TileType type) {
         JsonParser parser = new JsonParser();
-        try {
-            return parser.parse(FileUtilOld.getFileInput("TileEmotesMinesweeper.json")).getAsJsonObject().get(type.name()).getAsString();
-        } catch (FileNotFoundException | URISyntaxException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return parser.parse(Main.main.getModuleFileUtil().getContent("TileEmotesMinesweeper.json")).getAsJsonObject().get(type.name()).getAsString();
     }
 }

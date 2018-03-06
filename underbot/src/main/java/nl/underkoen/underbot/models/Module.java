@@ -3,6 +3,7 @@ package nl.underkoen.underbot.models;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import nl.underkoen.underbot.utils.ModuleFileUtil;
 
 /**
  * Created by Under_Koen on 02/03/2018.
@@ -11,7 +12,11 @@ import lombok.RequiredArgsConstructor;
 public abstract class Module {
     @Getter
     @NonNull
-    private ModuleInfo moduleInfo;
+    private final ModuleInfo moduleInfo;
+
+    @Getter
+    @NonNull
+    private final ModuleFileUtil moduleFileUtil;
 
     @Getter
     private Long upSince;

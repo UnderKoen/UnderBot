@@ -7,8 +7,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
+import nl.underkoen.underbot.Main;
 import nl.underkoen.underbot.messages.Message;
-import nl.underkoen.underbot.utils.FileUtilOld;
 import nl.underkoen.underbot.utils.MessageBuilder;
 import nl.underkoen.underbot.utils.WebPrintStream;
 
@@ -32,7 +32,7 @@ public class SocketHandler {
 
     public SocketHandler() {
         Configuration config = new Configuration();
-        config.setPort(1111);
+        config.setPort(112);
 
         server = new SocketIOServer(config);
         server.addConnectListener(client -> onConnection(client));
@@ -88,7 +88,7 @@ public class SocketHandler {
             } else {
                 if (!json.get("method").getAsString().equalsIgnoreCase("login")) return;
                 String credential = json.getAsJsonObject("params").get("credential").getAsString();
-                JsonObject configJson = new JsonParser().parse(FileUtilOld.getFileInput("config.json")).getAsJsonObject();
+                JsonObject configJson = new JsonParser().parse(Main.assetHandler.fileUtil.getContent("config.json")).getAsJsonObject();
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
 
                 configJson.getAsJsonArray("users").forEach(jsonElement -> {

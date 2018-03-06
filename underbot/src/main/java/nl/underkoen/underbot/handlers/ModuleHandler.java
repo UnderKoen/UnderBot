@@ -7,6 +7,7 @@ import nl.underkoen.underbot.models.ModuleInfo;
 import nl.underkoen.underbot.models.Status;
 import nl.underkoen.underbot.utils.FileUtil;
 import nl.underkoen.underbot.utils.Logger;
+import nl.underkoen.underbot.utils.ModuleFileUtil;
 
 import java.io.File;
 import java.net.URL;
@@ -38,7 +39,8 @@ public class ModuleHandler {
                 URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{moduleFile.toURL()});
                 String json = FileUtil.getAllContent(urlClassLoader.getResourceAsStream("moduleInfo.json"));
                 ModuleInfo info = new Gson().fromJson(json, ModuleInfo.class);
-                Object obj = urlClassLoader.loadClass(info.mainClass).getDeclaredConstructor(ModuleInfo.class).newInstance(info);
+                ModuleFileUtil moduleFileUtil = new ModuleFileUtil(info, urlClassLoader);
+                Object obj = urlClassLoader.loadClass(info.getMainClass()).getDeclaredConstructor(ModuleInfo.class, ModuleFileUtil.class).newInstance(info, moduleFileUtil);
                 if (obj instanceof Module) {
                     Module module = (Module) obj;
                     Random rnd = new Random();
@@ -61,10 +63,10 @@ public class ModuleHandler {
 
     public void init(Module module) {
         try {
-            Logger.log("Initializing: " + module.getModuleInfo().name);
+            Logger.log("Initializing: " + module.getModuleInfo().getName());
             if (!module.init()) stop(module);
         } catch (Exception e) {
-            Logger.log(module.getModuleInfo().name + " crashed.");
+            Logger.log(module.getModuleInfo().getName() + " crashed.");
             e.printStackTrace();
             try {
                 module.onCrash();
@@ -88,10 +90,10 @@ public class ModuleHandler {
     public void start(Module module) {
         try {
             if (module.getStatus() == Status.CRASHED) return;
-            Logger.log("Starting: " + module.getModuleInfo().name);
+            Logger.log("Starting: " + module.getModuleInfo().getName());
             if (!module.start()) stop(module);
         } catch (Exception e) {
-            Logger.log(module.getModuleInfo().name + " crashed.");
+            Logger.log(module.getModuleInfo().getName() + " crashed.");
             e.printStackTrace();
             try {
                 module.onCrash();
@@ -116,10 +118,10 @@ public class ModuleHandler {
     public void stop(Module module) {
         try {
             if (module.getStatus() == Status.CRASHED) return;
-            Logger.log("Stopping: " + module.getModuleInfo().name);
+            Logger.log("Stopping: " + module.getModuleInfo().getName());
             module.stop();
         } catch (Exception e) {
-            Logger.log(module.getModuleInfo().name + " crashed.");
+            Logger.log(module.getModuleInfo().getName() + " crashed.");
             e.printStackTrace();
             try {
                 module.onCrash();
