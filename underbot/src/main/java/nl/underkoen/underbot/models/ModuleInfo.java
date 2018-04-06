@@ -16,4 +16,8 @@ public class ModuleInfo {
     @Getter
     @SerializedName("name")
     private String name;
+
+    @Getter
+    @SerializedName("dependencies")
+    private String[] dependencies;
 }

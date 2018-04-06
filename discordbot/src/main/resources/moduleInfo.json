@@ -1,4 +1,7 @@
 {
   "mainClass": "nl.underkoen.discordbot.Main",
-  "name": "Discord"
+  "name": "Discord",
+  "dependencies": [
+    "Auth"
+  ]
 }
