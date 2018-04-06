@@ -20,11 +20,11 @@ public class Livestreamcheck extends Thread {
         try {
             while (check) {
                 Current = YoutubeUtil.getLivestream(channelId);
-                if (!Current.contentEquals(Last)) {
-                    if (!Current.isEmpty())
+                if (!Current.isEmpty()) {
+                    if (!Current.contentEquals(Last))
                         channel.sendMessage("@everyone Tim is live op https://www.youtube.com/makertim/live");
+                    Last = Current;
                 }
-                Last = Current;
                 this.sleep(5 * 60 * 1000);
             }
         } catch (Exception e) {

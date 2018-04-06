@@ -1,0 +1,37 @@
+group 'nl.underkoen'
+version '0.3.6'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven {
+        url  "https://jitpack.io"
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    compile "com.github.austinv11:Discord4J:2.10.0"
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
+    compile group: 'org.twitter4j', name: 'twitter4j-stream', version: '[4.0,)'
+    compile ('com.sedmelluq:lavaplayer:1.2.56')
+    compile group: 'io.socket', name: 'socket.io-client', version: '1.0.0'
+    //Doesn't add to fatJar
+    compileOnly project(':underbot')
+    compileOnly project(':auth')
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'nl.underkoen.discordbot.Main'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}

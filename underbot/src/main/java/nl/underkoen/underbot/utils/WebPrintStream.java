@@ -16,7 +16,7 @@ public class WebPrintStream extends PrintStream {
 
     private static File getLogFile() {
         try {
-            File file = Main.assetHandler.fileUtil.getFileInPersonalDir("logs");
+            File file = Main.assetHandler.getFileUtil().getFileInPersonalDir("logs");
             if (!file.exists()) file.mkdir();
             String time = new Timestamp(System.currentTimeMillis()).toString();
             time = time.replace(":", "-");
@@ -51,7 +51,7 @@ public class WebPrintStream extends PrintStream {
                             }
                         });
                         try {
-                            Main.assetHandler.fileUtil.updateFile(logFile, Main.assetHandler.fileUtil.getContent(logFile) + type.name.toUpperCase() + ": " + line);
+                            Main.assetHandler.getFileUtil().updateFile(logFile, Main.assetHandler.getFileUtil().getContent(logFile) + type.name.toUpperCase() + ": " + line);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

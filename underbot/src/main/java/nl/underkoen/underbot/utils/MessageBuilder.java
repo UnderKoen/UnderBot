@@ -51,7 +51,7 @@ public class MessageBuilder {
         JsonObject json = new JsonObject();
         json.addProperty("method", "logMessage");
         JsonObject params = new JsonObject();
-        params.addProperty("log", Main.assetHandler.fileUtil.getContent(log));
+        params.addProperty("log", Main.assetHandler.getFileUtil().getContent(log));
         json.add("params", params);
         return json.toString();
     }

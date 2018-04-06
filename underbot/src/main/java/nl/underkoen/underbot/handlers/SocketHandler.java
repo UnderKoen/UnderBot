@@ -31,8 +31,9 @@ public class SocketHandler {
     private Map<UUID, Boolean> loggedIn;
 
     public SocketHandler() {
+        JsonObject configJson = new JsonParser().parse(Main.assetHandler.getFileUtil().getContent("config.json")).getAsJsonObject();
         Configuration config = new Configuration();
-        config.setPort(112);
+        config.setPort(configJson.get("port").getAsInt());
 
         server = new SocketIOServer(config);
         server.addConnectListener(client -> onConnection(client));
@@ -88,7 +89,7 @@ public class SocketHandler {
             } else {
                 if (!json.get("method").getAsString().equalsIgnoreCase("login")) return;
                 String credential = json.getAsJsonObject("params").get("credential").getAsString();
-                JsonObject configJson = new JsonParser().parse(Main.assetHandler.fileUtil.getContent("config.json")).getAsJsonObject();
+                JsonObject configJson = new JsonParser().parse(Main.assetHandler.getFileUtil().getContent("config.json")).getAsJsonObject();
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
 
                 configJson.getAsJsonArray("users").forEach(jsonElement -> {

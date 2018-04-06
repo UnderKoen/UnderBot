@@ -1,0 +1,33 @@
+group 'nl.underkoen'
+version '0.3.6'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
+    compile(group: 'com.corundumstudio.socketio', name: 'netty-socketio', version: '1.7.14') {
+        exclude group: 'com.fasterxml.jackson.core'
+    }
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+    compileOnly "org.projectlombok:lombok:1.16.16"
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'nl.underkoen.underbot.Main'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
