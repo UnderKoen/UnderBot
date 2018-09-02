@@ -1,7 +1,9 @@
 package nl.underkoen.discordbot.commands;
 
-import nl.underkoen.discordbot.entities.CommandContext;
-import nl.underkoen.discordbot.entities.impl.CommandContextImpl;
+import nl.underkoen.chatbot.models.Command;
+import nl.underkoen.chatbot.models.RankAccessible;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.HelpMessage;
 import nl.underkoen.discordbot.utils.RoleUtil;
@@ -14,32 +16,32 @@ import java.util.List;
 /**
  * Created by Under_Koen on 10-05-17.
  */
-public interface MainCommand extends Command {
-    List<Command> getSubcommands();
+public abstract class MainCommand implements DCommand {
+    public abstract List<Command<DContext>> getSubcommands();
 
     @Override
-    default void setup() throws Exception {
-        List<Command> commands = getSubcommands();
+    public void setup() {
+        List<Command<DContext>> commands = getSubcommands();
         for (Command command : commands) {
             command.setup();
         }
     }
 
     @Override
-    default void stop() throws Exception {
-        List<Command> commands = getSubcommands();
+    public void teardown() {
+        List<Command<DContext>> commands = getSubcommands();
         for (Command command : commands) {
-            command.stop();
+            command.teardown();
         }
     }
 
     @Override
-    default void run(CommandContext context) throws Exception {
-        List<Command> subcommands = getSubcommands();
+    public void trigger(DContext context) {
+        List<Command<DContext>> subcommands = getSubcommands();
         if (context.getArgs().length == 0) {
             new HelpMessage().addCommand(this).showSubcommands(true).sendMessage(context.getChannel());
         } else {
-            HashMap<String, Command> commands = new HashMap<>();
+            HashMap<String, Command<DContext>> commands = new HashMap<>();
             HashMap<String, String> aliases = new HashMap<>();
             subcommands.forEach(command -> {
                 commands.put(command.getCommand(), command);
@@ -57,18 +59,19 @@ public interface MainCommand extends Command {
                 new HelpMessage().addCommand(this).showSubcommands(true).sendMessage(context.getChannel());
                 return;
             }
-            ;
 
             if (!commands.containsKey(commandName) && aliases.containsKey(commandName))
                 commandName = aliases.get(commandName);
 
-            Command command = commands.get(commandName);
+            Command<DContext> command = commands.get(commandName);
 
-            if (RoleUtil.getHighestRole(context.getMember()).getPosition() < command.getMinimumRole()) {
-                new ErrorMessage(context.getMember(), "The minimum role for /" + command.getCommand() + " is " +
-                        RoleUtil.getRole(context.getGuild(), command.getMinimumRole()).getName()).sendMessage(context.getChannel());
-                context.getMessage().delete();
-                return;
+            if (command instanceof RankAccessible) {
+                RankAccessible rankAccessible = (RankAccessible) command;
+                if (RoleUtil.getHighestRole(context.getMember()).getPosition() < rankAccessible.getMinimumRank()) {
+                    new ErrorMessage(context.getMember(), "The minimum role for /" + command.getCommand() + " is " +
+                            RoleUtil.getRole(context.getServer(), rankAccessible.getMinimumRank()).getName()).sendMessage(context.getChannel());
+                    return;
+                }
             }
             List<String> newArgs = Arrays.asList(context.getArgs());
             newArgs = new ArrayList<>(newArgs);
@@ -77,17 +80,9 @@ public interface MainCommand extends Command {
             List<String> newRawArgs = Arrays.asList(context.getRawArgs());
             newRawArgs = new ArrayList<>(newRawArgs);
             newRawArgs.remove(0);
-            command.run(new CommandContextImpl()
-                    .setArgs(newArgs.toArray(new String[0]))
-                    .setRawArgs(newRawArgs.toArray(new String[0]))
-                    .setChannel(context.getChannel())
-                    .setCommand(command.getCommand())
-                    .setGuild(context.getGuild())
-                    .setMember(context.getMember())
-                    .setUser(context.getUser())
-                    .setPrefix(context.getPrefix())
-                    .setMessage(context.getMessage())
-            );
+
+            context = new DContext(command, context.getMessage(), newArgs.toArray(new String[0]), newRawArgs.toArray(new String[0]));
+            command.trigger(context);
         }
     }
 }

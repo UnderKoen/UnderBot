@@ -1,13 +1,13 @@
 package nl.underkoen.discordbot.music.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import nl.underkoen.discordbot.Main;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.DiscordBot;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
+import nl.underkoen.discordbot.entities.DUser;
 import nl.underkoen.discordbot.music.MusicHandler;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by Under_Koen on 12-05-17.
  */
-public class NextCommand implements Command {
+public class NextCommand implements DCommand {
     private String command = "next";
     private String usage = "next";
     private String description = "Vote to skip this song.";
@@ -41,23 +41,19 @@ public class NextCommand implements Command {
         return description;
     }
 
-    @Override
-    public void setup() throws Exception {
-    }
-
-    public static List<IUser> votes = new ArrayList();
+    public static List<DUser> votes = new ArrayList<>();
 
     @Override
-    public void run(CommandContext context) {
-        if (context.getMember().getVoiceState().getChannel() != Main.getSelfMember(context.getGuild()).getVoiceState().getChannel()) {
-            new ErrorMessage(context.getMember(), "You need to be in " + Main.getSelfMember(context.getGuild()).getVoiceState().getChannel().getName()).sendMessage(context.getChannel());
+    public void trigger(DContext context) {
+        if (context.getMember().getVoiceState().getChannel() != DiscordBot.getSelfMember(context.getServer()).getVoiceState().getChannel()) {
+            new ErrorMessage(context.getMember(), "You need to be in " + DiscordBot.getSelfMember(context.getServer()).getVoiceState().getChannel().getName()).sendMessage(context.getChannel());
             return;
         }
-        if (!MusicHandler.isPlayingMusic(context.getGuild())) {
+        if (!MusicHandler.isPlayingMusic(context.getServer())) {
             new ErrorMessage(context.getMember(), "Bot isn't playing music").sendMessage(context.getChannel());
             return;
         }
-        if (MusicHandler.isPlayingDefaultMusic(context.getGuild())) {
+        if (MusicHandler.isPlayingDefaultMusic(context.getServer())) {
             new ErrorMessage(context.getMember(), "Can't skip default song").sendMessage(context.getChannel());
             return;
         }
@@ -66,14 +62,14 @@ public class NextCommand implements Command {
             return;
         }
         votes.add(context.getUser());
-        AudioTrack track = MusicHandler.getCurrentTrack(context.getGuild());
+        AudioTrack track = MusicHandler.getCurrentTrack(context.getServer());
         new TextMessage().setMention(context.getMember()).addText(context.getMember().getEffectiveName() +
                 " voted to skip [" + track.getInfo().title + "](" + track.getInfo().uri + ") (" +
                 votes.size() + "/" + (Math.round(Double.parseDouble(context.getMember().getVoiceState().getChannel().getConnectedUsers().size() + "") / 2.0) + ")"))
                 .sendMessage(context.getChannel());
         if (votes.size() >= (Math.round(Double.parseDouble(context.getMember().getVoiceState().getChannel().getConnectedUsers().size() + "") / 2.0))) {
             new TextMessage().addText("Skipped [" + track.getInfo().title + "](" + track.getInfo().uri + ")").sendMessage(context.getChannel());
-            MusicCommand.musicHandler.skipTrack(context.getGuild());
+            MusicCommand.musicHandler.skipTrack(context.getServer());
         }
     }
 }

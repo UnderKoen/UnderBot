@@ -1,17 +1,18 @@
 package nl.underkoen.discordbot.music.commands;
 
-import nl.underkoen.discordbot.Main;
+import nl.underkoen.chatbot.models.RankAccessible;
+import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.Roles;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
-import nl.underkoen.discordbot.entities.Member;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
+import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
 
 /**
  * Created by Under_Koen on 10-05-17.
  */
-public class LeaveCommand implements Command {
+public class LeaveCommand implements DCommand, RankAccessible {
     private String command = "leave";
     private String usage = "leave";
     private String description = "Let the bot leave the channel.";
@@ -38,23 +39,19 @@ public class LeaveCommand implements Command {
     }
 
     @Override
-    public int getMinimumRole() {
+    public int getMinimumRank() {
         return Roles.MOD.role;
     }
 
     @Override
-    public void setup() throws Exception {
-    }
-
-    @Override
-    public void run(CommandContext context) {
-        Member member = context.getMember();
-        if (Main.getSelfMember(context.getGuild()).getVoiceState().getChannel() == null) {
+    public void trigger(DContext context) {
+        DMember member = context.getMember();
+        if (DiscordBot.getSelfMember(context.getServer()).getVoiceState().getChannel() == null) {
             new ErrorMessage(member, "The bot needs to be in a voice channel").sendMessage(context.getChannel());
             return;
         }
         new TextMessage().addText("Just leaved: " + context.getMember()
                 .getVoiceState().getChannel().getName()).setMention(context.getMember()).sendMessage(context.getChannel());
-        MusicCommand.musicHandler.leave(context.getGuild());
+        MusicCommand.musicHandler.leave(context.getServer());
     }
 }

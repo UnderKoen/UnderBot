@@ -1,11 +1,12 @@
 package nl.underkoen.discordbot.commands.moderator;
 
-import nl.underkoen.discordbot.Main;
+import nl.underkoen.chatbot.models.RankAccessible;
+import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.Roles;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
-import nl.underkoen.discordbot.entities.Member;
-import nl.underkoen.discordbot.entities.impl.MemberImpl;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
+import nl.underkoen.discordbot.entities.DMember;
+import nl.underkoen.discordbot.entities.DServer;
 import nl.underkoen.discordbot.utils.ColorUtil;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
@@ -13,6 +14,7 @@ import sx.blah.discord.handle.impl.events.guild.category.CategoryCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.ChannelCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.VoiceChannelCreateEvent;
 import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.util.PermissionUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -29,18 +31,17 @@ import java.util.regex.Pattern;
 /**
  * Created by Under_Koen on 04-05-17.
  */
-public class TimeoutCommand implements Command {
+public class TimeoutCommand implements DCommand, RankAccessible {
     private String command = "timeout";
     private String usage = "/timeout [User] [Lenght] (reason...)";
     private String description = "Time out a user so he can't talk.";
     private int minimumRole = Roles.MOD.role;
 
-    private HashMap<IGuild, IRole> timeoutRoles = new HashMap<>();
+    private HashMap<DServer, IRole> timeoutRoles = new HashMap<>();
     private ExecutorService timeouts;
-    //private static HashMap<User, Timestamp> timeouts = new HashMap<>();
 
     @Override
-    public int getMinimumRole() {
+    public int getMinimumRank() {
         return minimumRole;
     }
 
@@ -60,9 +61,9 @@ public class TimeoutCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
+    public void setup() {
         timeouts = Executors.newCachedThreadPool();
-        for (IGuild guild : Main.client.getGuilds()) {
+        for (IGuild guild : DiscordBot.client.getGuilds()) {
             IRole timeoutRole;
             if (guild.getRolesByName("Muted").isEmpty()) {
                 timeoutRole = guild.createRole();
@@ -72,19 +73,21 @@ public class TimeoutCommand implements Command {
                 timeoutRole = guild.getRolesByName("Muted").get(0);
             }
             for (IChannel textChannel : guild.getChannels()) {
+                if (!canEdit(textChannel)) continue;
                 textChannel.overrideRolePermissions(timeoutRole, null, EnumSet.of(Permissions.SEND_MESSAGES,
                         Permissions.ADD_REACTIONS));
             }
             for (IVoiceChannel voiceChannel : guild.getVoiceChannels()) {
+                if (!canEdit(voiceChannel)) continue;
                 voiceChannel.overrideRolePermissions(timeoutRole, null, EnumSet.of(Permissions.VOICE_SPEAK));
             }
             for (ICategory category : guild.getCategories()) {
                 category.overrideRolePermissions(timeoutRole, null, EnumSet.of(Permissions.SEND_MESSAGES,
                         Permissions.ADD_REACTIONS, Permissions.VOICE_SPEAK));
             }
-            timeoutRoles.put(guild, timeoutRole);
+            timeoutRoles.put(DServer.getServer(guild), timeoutRole);
         }
-        Main.client.getDispatcher().registerListener(event -> {
+        DiscordBot.client.getDispatcher().registerListener(event -> {
             if (event instanceof ChannelCreateEvent) {
                 ChannelCreateEvent channelCreateEvent = (ChannelCreateEvent) event;
                 IRole timeoutRole = timeoutRoles.get(channelCreateEvent.getGuild());
@@ -105,8 +108,13 @@ public class TimeoutCommand implements Command {
         });
     }
 
+    private boolean canEdit(IChannel channel) {
+        return PermissionUtils.hasPermissions(channel, DiscordBot.client.getOurUser(), Permissions.MANAGE_PERMISSIONS);
+    }
+
     @Override
-    public void run(CommandContext context) {
+    public void trigger(DContext contxt) {
+        DContext context = contxt;
         if (context.getRawArgs().length == 0 || context.getRawArgs().length < 2) {
             new ErrorMessage(context.getMember(), ("This command needs " + ((context.getRawArgs().length == 0) ? "" : "more") + " arguments to work"))
                     .sendMessage(context.getChannel());
@@ -117,11 +125,11 @@ public class TimeoutCommand implements Command {
         Pattern pattern = Pattern.compile("<@!?(\\d+)>");
         Matcher matcher = pattern.matcher(context.getRawArgs()[0]);
         matcher.find();
-        Member member = null;
+        DMember member = null;
         try {
-            member = new MemberImpl(context.getGuild(), context.getGuild().getUserByID(Long.parseLong(matcher.group(1))));
+            member = DMember.getMember(context.getServer(), context.getServer().getGuild()
+                    .getUserByID(Long.parseLong(matcher.group(1))));
         } catch (Exception e) {
-            e.printStackTrace();
             new ErrorMessage(context.getMember(), context.getRawArgs()[0] + " is not a valid user.")
                     .sendMessage(context.getChannel());
             return;
@@ -162,11 +170,11 @@ public class TimeoutCommand implements Command {
             return;
         }
 
-        IRole timeoutRole = timeoutRoles.get(member.getGuild());
-        member.getUser().addRole(timeoutRole);
+        IRole timeoutRole = timeoutRoles.get(member.getServer());
+        member.getUser().getUser().addRole(timeoutRole);
 
         LocalDateTime finalLength = length;
-        Member finalMember = member;
+        DMember finalMember = member;
         timeouts.submit(() -> {
             Timestamp until = Timestamp.valueOf(finalLength);
             while (new Timestamp(System.currentTimeMillis()).before(until)) {
@@ -176,7 +184,7 @@ public class TimeoutCommand implements Command {
                     e.printStackTrace();
                 }
             }
-            finalMember.getUser().removeRole(timeoutRole);
+            finalMember.getUser().getUser().removeRole(timeoutRole);
         });
 
         TextMessage msg = new TextMessage().addText("Timeout information")

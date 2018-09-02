@@ -1,14 +1,14 @@
 package nl.underkoen.discordbot.commands.general;
 
-import nl.underkoen.discordbot.Main;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.DiscordBot;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.utils.Messages.HelpMessage;
 
 /**
  * Created by Under_Koen on 21-04-17.
  */
-public class HelpCommand implements Command {
+public class HelpCommand implements DCommand {
     private String command = "help";
     private String usage = "/help";
     private String description = "Returns all commands.";
@@ -29,16 +29,11 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-
-    }
-
-    @Override
-    public void run(CommandContext context) {
+    public void trigger(DContext context) {
         new HelpMessage()
                 .setMention(context.getMember())
                 //.showSubcommands(true)
-                .addCommands(Main.handler.getAllCommands())
+                .addCommands(DiscordBot.handler.getCommands())
                 .sendMessage(context.getChannel());
     }
 }

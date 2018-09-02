@@ -1,19 +1,19 @@
 package nl.underkoen.discordbot.commands.general;
 
-import nl.underkoen.discordbot.Main;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.DiscordBot;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Under_Koen on 09-05-17.
  */
-public class VersionCommand implements Command {
+public class VersionCommand implements DCommand {
     private String command = "versions";
     private String usage = "/versions";
     private String description = "Returns all the versions of the bot.";
@@ -34,16 +34,11 @@ public class VersionCommand implements Command {
     }
 
     @Override
-    public void setup() {
-    }
+    public void trigger(DContext context) {
+        List<String> versions = new ArrayList<>();
 
-    @Override
-    public void run(CommandContext context) throws URISyntaxException {
-        //TODO
-        ArrayList<String> versions = new ArrayList<>();
-
-        File folder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        folder = new File(folder.getParent() + "/Changelogs");
+        File folder = DiscordBot.moduleFileUtil.getPersonalDir();
+        folder = new File(folder, "Changelogs");
         File[] listOfFiles = folder.listFiles();
         if (listOfFiles == null) {
             new ErrorMessage(context.getMember(), "There are no versions. weird.").sendMessage(context.getChannel());
@@ -59,7 +54,7 @@ public class VersionCommand implements Command {
         for (String version : versions) {
             str.append("- ").append(version).append("\n");
         }
-        new TextMessage().setMention(context.getMember()).addText("All version for /changelog [version]")
+        new TextMessage().setMention(context.getMember()).addText("All VERSION for /changelog [VERSION]")
                 .addField("Versions", str.toString(), false).sendMessage(context.getChannel());
     }
 }

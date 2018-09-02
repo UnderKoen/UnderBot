@@ -1,31 +1,34 @@
 package nl.underkoen.discordbot.threads;
 
+import nl.underkoen.discordbot.DiscordBot;
+import nl.underkoen.discordbot.entities.DChannel;
 import nl.underkoen.discordbot.utils.YoutubeUtil;
-import sx.blah.discord.handle.obj.IChannel;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Under_Koen on 09-05-17.
  */
 public class Livestreamcheck extends Thread {
     public boolean check = true;
-    public IChannel channel;
+    public DChannel channel;
 
-    public static String channelId = "UC8cgXXpepeB2CWfxdy7uGVg";
+    public static final String CHANNEL_ID = "UC8cgXXpepeB2CWfxdy7uGVg";
 
-    public String Current = "";
-    public String Last = "";
+    private String current = "";
+    private String last = "";
 
     @Override
     public void run() {
         try {
             while (check) {
-                Current = YoutubeUtil.getLivestream(channelId);
-                if (!Current.isEmpty()) {
-                    if (!Current.contentEquals(Last))
+                current = YoutubeUtil.getLivestream(CHANNEL_ID);
+                if (!current.isEmpty() && DiscordBot.client.isLoggedIn()) {
+                    if (!current.contentEquals(last))
                         channel.sendMessage("@everyone Tim is live op https://www.youtube.com/makertim/live");
-                    Last = Current;
+                    last = current;
                 }
-                this.sleep(5 * 60 * 1000);
+                sleep(TimeUnit.MINUTES.toMillis(5));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,7 +39,7 @@ public class Livestreamcheck extends Thread {
         check = false;
     }
 
-    public void setChannel(IChannel channel) {
+    public void setChannel(DChannel channel) {
         this.channel = channel;
     }
 }

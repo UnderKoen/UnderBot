@@ -9,7 +9,7 @@ import nl.underkoen.underbot.utils.WebPrintStream;
 /**
  * Created by Under_Koen on 03/03/2018.
  */
-public class RequestLog extends Message {
+public class RequestLog implements Message {
     @Getter
     private String method = "requestLog";
 

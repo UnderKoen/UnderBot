@@ -9,7 +9,7 @@ import nl.underkoen.underbot.utils.MessageBuilder;
 /**
  * Created by Under_Koen on 03/03/2018.
  */
-public class RequestUsage extends Message {
+public class RequestUsage implements Message {
     @Getter
     private String method = "requestUsage";
 

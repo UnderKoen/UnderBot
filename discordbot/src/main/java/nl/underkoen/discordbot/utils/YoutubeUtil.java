@@ -2,7 +2,7 @@ package nl.underkoen.discordbot.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import nl.underkoen.discordbot.Main;
+import nl.underkoen.discordbot.DiscordBot;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class YoutubeUtil {
     }
 
     public static String getLivestream(String userId) {
-        String url = "https://www.googleapis.com/youtube/v3/search?part=id&channelId=" + userId + "&eventType=live&type=video&key=" + Main.keys.getYoutubeKey();
+        String url = "https://www.googleapis.com/youtube/v3/search?part=id&channelId=" + userId + "&eventType=live&type=video&key=" + DiscordBot.keys.getYoutubeKey();
         String charset = "UTF-8";
         try {
             URL obj = new URL(url);
@@ -52,7 +52,7 @@ public class YoutubeUtil {
     }
 
     public static String getYoutubeVideo(String search) {
-        String url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=" + search + "&key=" + Main.keys.getYoutubeKey();
+        String url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=" + search + "&key=" + DiscordBot.keys.getYoutubeKey();
         String charset = "UTF-8";
         try {
             URL obj = new URL(url);

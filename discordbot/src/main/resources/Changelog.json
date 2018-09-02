@@ -1,11 +1,12 @@
 {
-  "ADDED": [
-    "fancy underbot things"
-  ],
+  "ADDED": [],
   "REMOVED": [
-    "hitbox shit"
+    "Removed twittercheck"
   ],
-  "FIXED": [],
+  "FIXED": [
+    "Timeout permission",
+    "Livestream check"
+  ],
   "TODO": [
     "multiple guilds support",
     "auto delete msg when stream is over",

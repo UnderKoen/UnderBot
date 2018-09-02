@@ -1,6 +1,6 @@
 package nl.underkoen.discordbot.utils.Messages;
 
-import nl.underkoen.discordbot.entities.Member;
+import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.utils.ColorUtil;
 import sx.blah.discord.handle.impl.obj.Embed;
 import sx.blah.discord.handle.obj.IEmbed;
@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * Created by Under_Koen on 21-04-17.
  */
-public class TextMessage implements UnderMessage {
+public class TextMessage extends UnderMessage {
     private Color color = ColorUtil.hexToColor("#2a6886");
 
-    private Member user;
+    private DMember user;
 
     private String message;
 
@@ -25,7 +25,7 @@ public class TextMessage implements UnderMessage {
 
     private List<IEmbed.IEmbedField> fields;
 
-    public TextMessage setMention(Member user) {
+    public TextMessage setMention(DMember user) {
         this.user = user;
         return this;
     }
@@ -86,7 +86,7 @@ public class TextMessage implements UnderMessage {
     }
 
     @Override
-    public Member getAuthor() {
+    public DMember getAuthor() {
         return user;
     }
 

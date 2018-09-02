@@ -2,24 +2,25 @@ package nl.underkoen.discordbot.commands.supporter;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import nl.underkoen.discordbot.Main;
+import nl.underkoen.chatbot.models.RankAccessible;
+import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.Roles;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
 
 /**
  * Created by Under_Koen on 02-05-17.
  */
-public class EmoteCommand implements Command {
+public class EmoteCommand implements DCommand, RankAccessible {
     private String command = "emote";
     private String usage = "/emote [text...]";
     private String description = "Sends your message in emote style";
     private int minimumRole = Roles.SUPPORTER.role;
 
     @Override
-    public int getMinimumRole() {
+    public int getMinimumRank() {
         return minimumRole;
     }
 
@@ -39,12 +40,12 @@ public class EmoteCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-        Main.main.getModuleFileUtil().copyResourceToPersonalDir("Emote.json");
+    public void setup() {
+        DiscordBot.moduleFileUtil.copyResourceToPersonalDir("Emote.json");
     }
 
     @Override
-    public void run(CommandContext context) throws Exception {
+    public void trigger(DContext context) {
         if (context.getArgs().length == 0) {
             new ErrorMessage(context.getMember(), "No text to change to emote text")
                     .sendMessage(context.getChannel());
@@ -57,7 +58,7 @@ public class EmoteCommand implements Command {
         args = new StringBuilder(args.toString().trim().toLowerCase());
         StringBuilder text = new StringBuilder();
         JsonParser parser = new JsonParser();
-        JsonObject o = parser.parse(Main.main.getModuleFileUtil().getContent("Emote.Json")).getAsJsonObject();
+        JsonObject o = parser.parse(DiscordBot.moduleFileUtil.getContent("Emote.Json")).getAsJsonObject();
         TextMessage msg = new TextMessage().setMention(context.getMember());
         for (char Char : args.toString().toCharArray()) {
             String add = (o.has(Char + "")) ? o.get(Char + "").getAsString() : o.get("none").getAsString();

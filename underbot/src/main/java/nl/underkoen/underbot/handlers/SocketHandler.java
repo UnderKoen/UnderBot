@@ -30,30 +30,41 @@ public class SocketHandler {
     @Getter
     private Map<UUID, Boolean> loggedIn;
 
+    private boolean started = false;
+
     public SocketHandler() {
         JsonObject configJson = new JsonParser().parse(Main.assetHandler.getFileUtil().getContent("config.json")).getAsJsonObject();
         Configuration config = new Configuration();
         config.setPort(configJson.get("port").getAsInt());
 
         server = new SocketIOServer(config);
-        server.addConnectListener(client -> onConnection(client));
-        server.addDisconnectListener(client -> onDisconnection(client));
-        server.addEventListener("message", String.class, (client, data, ackSender) -> onMessage(client, data, ackSender));
+        server.addConnectListener(this::onConnection);
+        server.addDisconnectListener(this::onDisconnection);
+        server.addEventListener("message", String.class, this::onMessage);
 
         PrintStream out = new WebPrintStream(server, MessageBuilder.ConsoleType.LOG);
         PrintStream err = new WebPrintStream(server, MessageBuilder.ConsoleType.ERR);
         System.setOut(out);
         System.setErr(err);
 
-        server.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
         messages = new HashMap<>();
         loggedIn = new HashMap<>();
     }
 
+    public boolean start() {
+        if (started) return false;
+        server.start();
+        started = true;
+        return true;
+    }
+
+    public boolean stop() {
+        if (!started) return false;
+        server.stop();
+        return true;
+    }
+
     /**
-     * @param message
      * @return true if succesfully added, false when not.
      */
     public boolean addMessage(Message message) {
@@ -66,22 +77,21 @@ public class SocketHandler {
     }
 
     /**
-     * @param message
      * @return true if succesfully remove, false when not.
      */
     public boolean removeMessage(Message message) {
         return messages.remove(message.getMethod().toLowerCase(), message);
     }
 
-    public void onConnection(SocketIOClient client) {
+    private void onConnection(SocketIOClient client) {
         loggedIn.put(client.getSessionId(), false);
     }
 
-    public void onDisconnection(SocketIOClient client) {
+    private void onDisconnection(SocketIOClient client) {
         loggedIn.remove(client.getSessionId());
     }
 
-    public void onMessage(SocketIOClient client, String data, AckRequest ackSender) {
+    private void onMessage(SocketIOClient client, String data, AckRequest ackSender) {
         try {
             JsonObject json = new JsonParser().parse(data).getAsJsonObject();
             if (loggedIn.get(client.getSessionId())) {
@@ -95,16 +105,15 @@ public class SocketHandler {
                 configJson.getAsJsonArray("users").forEach(jsonElement -> {
                     JsonObject jsonC = jsonElement.getAsJsonObject();
                     md.update((jsonC.get("password").getAsString() + jsonC.get("username").getAsString()).getBytes());
-                    StringBuffer result = new StringBuffer();
+                    StringBuilder result = new StringBuilder();
                     for (byte byt : md.digest()) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
                     if (result.toString().equals(credential)) {
                         loggedIn.replace(client.getSessionId(), true);
-                        return;
                     }
                 });
                 client.sendEvent("message", MessageBuilder.getLoginMessage(loggedIn.get(client.getSessionId())));
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }

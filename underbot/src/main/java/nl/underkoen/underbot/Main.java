@@ -16,7 +16,7 @@ public class Main {
     public static ModuleHandler moduleHandler;
     public static AssetHandler assetHandler;
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) {
         assetHandler = new AssetHandler();
 
         if (!assetHandler.hasAssets()) {
@@ -25,11 +25,15 @@ public class Main {
         }
 
         socketHandler = new SocketHandler();
+        socketHandler.start();
+
         moduleHandler = new ModuleHandler();
 
         socketHandler.addMessage(new RequestUsage());
         socketHandler.addMessage(new RequestLog());
         socketHandler.addMessage(new RequestModules(moduleHandler));
         socketHandler.addMessage(new ModuleAction(moduleHandler));
+
+        Runtime.getRuntime().addShutdownHook(new Thread(socketHandler::stop));
     }
 }

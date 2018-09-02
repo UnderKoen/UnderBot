@@ -1,7 +1,7 @@
 package nl.underkoen.discordbot.minesweeper.commands;
 
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.minesweeper.Map;
 import nl.underkoen.discordbot.minesweeper.Minesweeper;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
@@ -9,7 +9,7 @@ import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 /**
  * Created by Under_Koen on 21-07-17.
  */
-public class OpenCommand implements Command {
+public class OpenCommand implements DCommand {
     private String command = "open";
     private String usage = "/open [X location] [Y location]";
     private String description = "Open [location] in your game.";
@@ -30,12 +30,7 @@ public class OpenCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-
-    }
-
-    @Override
-    public void run(CommandContext context) throws Exception {
+    public void trigger(DContext context) {
         if (context.getArgs().length < 2) {
             new ErrorMessage(context.getMember(), "This command needs arguments to work").sendMessage(context.getChannel());
             return;

@@ -56,10 +56,10 @@ public class ModuleFileUtil {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
             }
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(content);
-            fileWriter.flush();
-            fileWriter.close();
+            try (FileWriter fileWriter = new FileWriter(file)) {
+                fileWriter.write(content);
+                fileWriter.flush();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

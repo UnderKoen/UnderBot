@@ -1,8 +1,8 @@
 package nl.underkoen.discordbot.minesweeper;
 
-import nl.underkoen.discordbot.entities.Member;
+import nl.underkoen.discordbot.entities.DChannel;
+import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
-import sx.blah.discord.handle.obj.IChannel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,32 +13,32 @@ import java.util.List;
 public class Minesweeper {
     private static List<Minesweeper> games = new ArrayList<>();
 
-    private Member owner;
+    private DMember owner;
     private Map map;
 
-    public Minesweeper(Member owner) {
+    public Minesweeper(DMember owner) {
         this.owner = owner;
         map = new Map();
         games.remove(getGame(owner));
         games.add(this);
     }
 
-    public static Minesweeper getGame(Member owner) {
+    public static Minesweeper getGame(DMember owner) {
         for (Minesweeper game : games) {
             if (game.getOwner() == owner) return game;
         }
-        return new Minesweeper(owner);
+        return null;
     }
 
     public Map getMap() {
         return map;
     }
 
-    private Member getOwner() {
+    private DMember getOwner() {
         return owner;
     }
 
-    public void sendMap(IChannel channel) {
+    public void sendMap(DChannel channel) {
         new TextMessage().setTitle("MineSweeper").addText(map.toMessage()).setMention(owner).sendMessage(channel);
     }
 }

@@ -12,7 +12,7 @@ import nl.underkoen.underbot.utils.MessageBuilder;
 /**
  * Created by Under_Koen on 05/03/2018.
  */
-public class ModuleAction extends Message {
+public class ModuleAction implements Message {
     @Getter
     private String method = "moduleAction";
 

@@ -1,9 +1,10 @@
 package nl.underkoen.discordbot.music.commands;
 
+import nl.underkoen.chatbot.models.RankAccessible;
 import nl.underkoen.discordbot.Roles;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
-import nl.underkoen.discordbot.entities.Member;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
+import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.music.MusicHandler;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
@@ -11,7 +12,7 @@ import nl.underkoen.discordbot.utils.Messages.TextMessage;
 /**
  * Created by Under_Koen on 10-05-17.
  */
-public class JoinCommand implements Command {
+public class JoinCommand implements DCommand, RankAccessible {
     private String command = "join";
     private String usage = "join";
     private String description = "Let the bot join your channel";
@@ -38,17 +39,13 @@ public class JoinCommand implements Command {
     }
 
     @Override
-    public int getMinimumRole() {
+    public int getMinimumRank() {
         return Roles.MOD.role;
     }
 
     @Override
-    public void setup() throws Exception {
-    }
-
-    @Override
-    public void run(CommandContext context) {
-        Member member = context.getMember();
+    public void trigger(DContext context) {
+        DMember member = context.getMember();
         if (member.getVoiceState().getChannel() == null) {
             new ErrorMessage(member, "You need to be in a voice channel").sendMessage(context.getChannel());
             return;

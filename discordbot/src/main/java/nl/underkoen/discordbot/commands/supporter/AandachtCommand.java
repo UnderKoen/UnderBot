@@ -1,11 +1,12 @@
 package nl.underkoen.discordbot.commands.supporter;
 
-import nl.underkoen.discordbot.Main;
+import nl.underkoen.chatbot.models.RankAccessible;
+import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.Roles;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
+import nl.underkoen.discordbot.entities.DUser;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,14 +14,14 @@ import java.util.Collections;
 /**
  * Created by Under_Koen on 03-05-17.
  */
-public class AandachtCommand implements Command {
+public class AandachtCommand implements DCommand, RankAccessible {
     private String command = "aandacht";
     private String usage = "/aandacht";
     private String description = "Sends a line from AANDACHT - Kud";
     private int minimumRole = Roles.SUPPORTER.role;
 
     @Override
-    public int getMinimumRole() {
+    public int getMinimumRank() {
         return minimumRole;
     }
 
@@ -40,8 +41,8 @@ public class AandachtCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-        Main.main.getModuleFileUtil().copyResourceToPersonalDir("Aandacht.txt");
+    public void setup() {
+        DiscordBot.moduleFileUtil.copyResourceToPersonalDir("Aandacht.txt");
         aandacht = getAandacht();
     }
 
@@ -50,7 +51,7 @@ public class AandachtCommand implements Command {
         ArrayList<String> result = new ArrayList<>();
 
         try {
-            Collections.addAll(result, Main.main.getModuleFileUtil().getContent("Aandacht.txt").split("\n"));
+            Collections.addAll(result, DiscordBot.moduleFileUtil.getContent("Aandacht.txt").split("\n"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,10 +60,10 @@ public class AandachtCommand implements Command {
 
     private ArrayList<String> aandacht;
     private int current = 0;
-    private IUser last;
+    private DUser last;
 
     @Override
-    public void run(CommandContext context) throws Exception {
+    public void trigger(DContext context) {
         if (context.getUser() != last) {
             new TextMessage().addText(aandacht.get(current)).setMention(context.getMember()).sendMessage(context.getChannel());
             last = context.getUser();

@@ -4,14 +4,12 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.music.commands.NextCommand;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
-;
 
 /**
  * Created by Under_Koen on 10-05-17.
@@ -29,7 +27,7 @@ public class TrackScheduler extends AudioEventAdapter {
         return queue.toArray(new AudioTrack[0]);
     }
 
-    public void queue(AudioTrack track, CommandContext context) {
+    public void queue(AudioTrack track, DContext context) {
         if (player.getPlayingTrack() == defaultTrack && defaultTrack != null) {
             player.startTrack(null, false);
         }

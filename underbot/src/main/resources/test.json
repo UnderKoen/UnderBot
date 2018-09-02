@@ -1,0 +1,20 @@
+{
+  "method": "getOptions",
+  "params": {
+    "discord": {
+      "title": "Discord",
+      "keys": [
+        {
+          "name": "Discord Key",
+          "value": "",
+          "type": "STRING"
+        },
+        {
+          "name": "Youtube Key",
+          "value": "",
+          "type": "STRING"
+        }
+      ]
+    }
+  }
+}

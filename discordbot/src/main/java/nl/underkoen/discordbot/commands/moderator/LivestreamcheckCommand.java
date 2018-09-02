@@ -1,8 +1,10 @@
 package nl.underkoen.discordbot.commands.moderator;
 
+import nl.underkoen.chatbot.models.RankAccessible;
 import nl.underkoen.discordbot.Roles;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.entities.DChannel;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.threads.Livestreamcheck;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
@@ -13,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Under_Koen on 09-05-17.
  */
-public class LivestreamcheckCommand implements Command {
+public class LivestreamcheckCommand implements DCommand, RankAccessible {
     private String command = "livestreamcheck";
     private String usage = "/livestreamcheck (textChannel)";
     private String description = "Enable/disable livestreamcheck in (textchannel).";
@@ -23,7 +25,7 @@ public class LivestreamcheckCommand implements Command {
     private Livestreamcheck thread;
 
     @Override
-    public int getMinimumRole() {
+    public int getMinimumRank() {
         return minimumRole;
     }
 
@@ -43,17 +45,13 @@ public class LivestreamcheckCommand implements Command {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void teardown() {
         thread.stopCheck();
         checking = false;
     }
 
     @Override
-    public void setup() throws Exception {
-    }
-
-    @Override
-    public void run(CommandContext context) throws Exception {
+    public void trigger(DContext context) {
         if (!checking) {
             checking = true;
             thread = new Livestreamcheck();
@@ -63,7 +61,7 @@ public class LivestreamcheckCommand implements Command {
                 Matcher matcher = pattern.matcher(context.getRawArgs()[0]);
                 matcher.find();
                 try {
-                    thread.setChannel(context.getGuild().getChannelByID(Long.parseLong(matcher.group(1))));
+                    thread.setChannel(DChannel.getChannel(context.getServer(), Long.parseLong(matcher.group(1))));
                 } catch (Exception e) {
                     new ErrorMessage(context.getMember(), context.getRawArgs()[0] + " is not a valid channel.")
                             .sendMessage(context.getChannel());
@@ -75,11 +73,11 @@ public class LivestreamcheckCommand implements Command {
             thread.start();
             if (thread.check) {
                 new TextMessage().setMention(context.getMember())
-                        .addText("Enabled livestream check for " + thread.channel.mention() + ".")
+                        .addText("Enabled livestream check for " + thread.channel.getChannel().mention() + ".")
                         .sendMessage(context.getChannel());
             } else {
                 new TextMessage().setMention(context.getMember())
-                        .addText("Disabled livestream check for " + thread.channel.mention() + ".")
+                        .addText("Disabled livestream check for " + thread.channel.getChannel().mention() + ".")
                         .sendMessage(context.getChannel());
             }
         } else {

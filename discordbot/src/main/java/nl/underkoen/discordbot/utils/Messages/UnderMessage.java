@@ -1,8 +1,8 @@
 package nl.underkoen.discordbot.utils.Messages;
 
-import nl.underkoen.discordbot.Main;
-import nl.underkoen.discordbot.entities.Member;
-import sx.blah.discord.handle.obj.IChannel;
+import nl.underkoen.discordbot.DiscordBot;
+import nl.underkoen.discordbot.entities.DChannel;
+import nl.underkoen.discordbot.entities.DMember;
 import sx.blah.discord.handle.obj.IEmbed.IEmbedField;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.EmbedBuilder;
@@ -16,32 +16,31 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Under_Koen on 19-04-17.
  */
-public interface UnderMessage {
-    default Color getColor() {
+public abstract class UnderMessage {
+    public abstract Color getColor();
+
+    public abstract DMember getAuthor();
+
+    public List<IEmbedField> getFields() {
+        return new ArrayList<>();
+    }
+
+    public String getDescription() {
         return null;
     }
 
-    default Member getAuthor() {
+    public String getTitle() {
         return null;
     }
 
-    default List<IEmbedField> getFields() {
-        return new ArrayList<IEmbedField>();
-    }
-
-    default String getDescription() {
+    public String getUrl() {
         return null;
     }
 
-    default String getTitle() {
-        return null;
+    public void lastCheck(EmbedBuilder msg, DChannel channel) {
     }
 
-    default String getUrl() {
-        return null;
-    }
-
-    default void sendMessage(IChannel channel) {
+    public void sendMessage(DChannel channel) {
         EmbedBuilder msg = new EmbedBuilder();
 
         Color color = getColor();
@@ -49,10 +48,10 @@ public interface UnderMessage {
             msg.withColor(color);
         }
 
-        Member author = getAuthor();
+        DMember author = getAuthor();
         if (author != null) {
             msg.withFooterText(author.getEffectiveName());
-            msg.withFooterIcon(author.getUser().getAvatarURL());
+            msg.withFooterIcon(author.getUser().getUser().getAvatarURL());
         }
 
         List<IEmbedField> fields = getFields();
@@ -74,9 +73,11 @@ public interface UnderMessage {
             msg.withUrl(url);
         }
 
-        IMessage ms = channel.sendMessage(msg.build());
+        lastCheck(msg, channel);
 
-        Main.timer.schedule(
+        IMessage ms = channel.getChannel().sendMessage(msg.build());
+
+        DiscordBot.timer.schedule(
                 new TimerTask() {
                     @Override
                     public void run() {

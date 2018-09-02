@@ -3,19 +3,19 @@ package nl.underkoen.discordbot.commands.general;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import nl.underkoen.discordbot.Main;
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.DiscordBot;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
 
 /**
  * Created by Under_Koen on 23-04-17.
  */
-public class ChangelogCommand implements Command {
+public class ChangelogCommand implements DCommand {
     private String command = "changelog";
-    private String usage = "/changelog (version)";
-    private String description = "Returns the changelog of a version.";
+    private String usage = "/changelog (VERSION)";
+    private String description = "Returns the changelog of a VERSION.";
 
     @Override
     public String getCommand() {
@@ -33,17 +33,17 @@ public class ChangelogCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-        Main.main.getModuleFileUtil().copyResourceToPersonalDir("Changelog.json", "Changelogs/Changelog_" + Main.version + ".json");
+    public void setup() {
+        DiscordBot.moduleFileUtil.copyResourceToPersonalDir("Changelog.json", "Changelogs/Changelog_" + DiscordBot.VERSION + ".json");
     }
 
-    private String getChangelog(String version) throws Exception {
-        return Main.main.getModuleFileUtil().getContent("/Changelogs/Changelog_" + version + ".json");
+    private String getChangelog(String version) {
+        return DiscordBot.moduleFileUtil.getContent("/Changelogs/Changelog_" + version + ".json");
     }
 
     @Override
-    public void run(CommandContext context) {
-        String version = Main.version;
+    public void trigger(DContext context) {
+        String version = DiscordBot.VERSION;
         if (context.getArgs().length > 0) {
             version = context.getArgs()[0];
         }
@@ -73,7 +73,7 @@ public class ChangelogCommand implements Command {
         for (JsonElement obj : o.get("TODO").getAsJsonArray()) {
             todo.append("- ").append(obj.getAsString()).append("\n");
         }
-        TextMessage message = new TextMessage().setMention(context.getMember()).addText("The changelog of version " + version);
+        TextMessage message = new TextMessage().setMention(context.getMember()).addText("The changelog of VERSION " + version);
         message.addField("Added", added.toString(), false);
         message.addField("Removed", removed.toString(), false);
         message.addField("Fixed", fixed.toString(), false);

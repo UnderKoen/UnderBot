@@ -1,6 +1,6 @@
 package nl.underkoen.discordbot.utils.Messages;
 
-import nl.underkoen.discordbot.entities.Member;
+import nl.underkoen.discordbot.entities.DMember;
 import sx.blah.discord.handle.impl.obj.Embed;
 import sx.blah.discord.handle.obj.IEmbed;
 
@@ -11,14 +11,14 @@ import java.util.List;
 /**
  * Created by Under_Koen on 19-04-17.
  */
-public class ErrorMessage implements UnderMessage {
+public class ErrorMessage extends UnderMessage {
     private Color color = Color.RED;
 
-    private Member user;
+    private DMember user;
 
     private List<IEmbed.IEmbedField> fields;
 
-    public ErrorMessage(Member user, String error) {
+    public ErrorMessage(DMember user, String error) {
         this.user = user;
         fields = new ArrayList();
         fields.add(new Embed.EmbedField("Error:", error, true));
@@ -30,7 +30,7 @@ public class ErrorMessage implements UnderMessage {
     }
 
     @Override
-    public Member getAuthor() {
+    public DMember getAuthor() {
         return user;
     }
 

@@ -6,13 +6,5 @@
     "consumerSecret": "",
     "token": "",
     "tokenSecret": ""
-  },
-  "hitbox": {
-    "name": "",
-    "pass": "",
-    "supporterCheck": {
-      "user": "",
-      "auth": ""
-    }
   }
 }

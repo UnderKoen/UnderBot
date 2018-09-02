@@ -1,13 +1,13 @@
 package nl.underkoen.discordbot.minesweeper.commands;
 
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.minesweeper.Minesweeper;
 
 /**
  * Created by Under_Koen on 21-07-17.
  */
-public class CreateCommand implements Command {
+public class CreateCommand implements DCommand {
     private String command = "create";
     private String usage = "/create";
     private String description = "Create a game of minesweeper.";
@@ -28,12 +28,7 @@ public class CreateCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-
-    }
-
-    @Override
-    public void run(CommandContext context) throws Exception {
+    public void trigger(DContext context) {
         Minesweeper ms = new Minesweeper(context.getMember());
         ms.sendMap(context.getChannel());
     }

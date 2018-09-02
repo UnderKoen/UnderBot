@@ -1,12 +1,12 @@
 package nl.underkoen.discordbot.commands.general;
 
-import nl.underkoen.discordbot.commands.Command;
-import nl.underkoen.discordbot.entities.CommandContext;
+import nl.underkoen.discordbot.entities.DCommand;
+import nl.underkoen.discordbot.entities.DContext;
 
 /**
  * Created by Under_Koen on 19-04-17.
  */
-public class TestCommand implements Command {
+public class TestCommand implements DCommand {
     private String command = "test";
     private String usage = "/test";
     private String description = "This is a test command.";
@@ -27,12 +27,6 @@ public class TestCommand implements Command {
     }
 
     @Override
-    public void setup() throws Exception {
-
-    }
-
-    @Override
-    public void run(CommandContext context) {
-        ;
+    public void trigger(DContext context) {
     }
 }
