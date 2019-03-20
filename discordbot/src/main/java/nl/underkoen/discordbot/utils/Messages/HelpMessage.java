@@ -1,8 +1,9 @@
 package nl.underkoen.discordbot.utils.Messages;
 
+import nl.underkoen.chatbot.commands.MainCommand;
 import nl.underkoen.chatbot.models.Command;
 import nl.underkoen.chatbot.models.RankAccessible;
-import nl.underkoen.discordbot.commands.MainCommand;
+import nl.underkoen.discordbot.commands.DMainCommand;
 import nl.underkoen.discordbot.entities.DChannel;
 import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.entities.DMember;
@@ -112,8 +113,8 @@ public class HelpMessage extends UnderMessage {
             StringBuilder builder = new StringBuilder();
             builder.append("**").append(command.getUsage()).append("** -> ").append(command.getDescription()).append("\n");
             if (command instanceof MainCommand && subcommands) {
-                MainCommand mainCommand = (MainCommand) command;
-                mainCommand.getSubcommands().forEach(subcommand -> builder.append("    - **").append(subcommand.getUsage().replace(subcommand.getPrefix(), "")).append("** -> ").append(subcommand.getDescription()).append("\n"));
+                DMainCommand mainCommand = (DMainCommand) command;
+                mainCommand.getCommands().forEach(subcommand -> builder.append("    - **").append(subcommand.getUsage().replace(subcommand.getPrefix(), "")).append("** -> ").append(subcommand.getDescription()).append("\n"));
             }
             String cmdName = command.getCommand();
             String firstLetter = ((Character) cmdName.charAt(0)).toString();

@@ -107,7 +107,6 @@ public class DiscordBot extends Module {
         CommandLoader.loadCommands("nl.underkoen.discordbot.commands", handler);
         handler.registerCommand(new MusicCommand());
         handler.registerCommand(new MinesweeperCommand());
-
         return true;
     }
 

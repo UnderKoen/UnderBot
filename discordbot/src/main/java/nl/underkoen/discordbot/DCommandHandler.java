@@ -3,7 +3,10 @@ package nl.underkoen.discordbot;
 import nl.underkoen.chatbot.CommandHandler;
 import nl.underkoen.chatbot.models.Command;
 import nl.underkoen.chatbot.models.RankAccessible;
-import nl.underkoen.discordbot.entities.*;
+import nl.underkoen.discordbot.entities.DChannel;
+import nl.underkoen.discordbot.entities.DContext;
+import nl.underkoen.discordbot.entities.DMember;
+import nl.underkoen.discordbot.entities.DMessage;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.RoleUtil;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -17,7 +20,7 @@ import java.util.Arrays;
 /**
  * Created by Under_Koen on 30/08/2018.
  */
-public class DCommandHandler extends CommandHandler<DChannel, DContext, DMember, DMessage, DServer, DUser> {
+public class DCommandHandler extends CommandHandler<Command<DContext>, DContext, DMessage> {
     @EventSubscriber
     public void onReady(ReadyEvent event) {
         DiscordBot.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, "/help -> for help");
@@ -60,5 +63,15 @@ public class DCommandHandler extends CommandHandler<DChannel, DContext, DMember,
         String[] rawArgs = message.getRawContent().split(" ");
         rawArgs = Arrays.copyOfRange(rawArgs, 1, rawArgs.length);
         return new DContext(command, message, args, rawArgs);
+    }
+
+    @Override
+    public void setup() {
+        super.setup();
+    }
+
+    @Override
+    public void teardown() {
+        super.teardown();
     }
 }

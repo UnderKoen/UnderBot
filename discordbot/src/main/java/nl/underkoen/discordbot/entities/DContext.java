@@ -7,8 +7,8 @@ import sx.blah.discord.handle.obj.IMessage;
 /**
  * Created by Under_Koen on 30/08/2018.
  */
-public class DContext implements Context<DChannel, DMember, DMessage, DServer, DUser> {
-    private Command command;
+public class DContext implements Context<DChannel, Command<DContext>, DMember, DMessage, DServer, DUser> {
+    private Command<DContext> command;
     private DChannel channel;
     private DMessage message;
     private DUser user;
@@ -17,7 +17,7 @@ public class DContext implements Context<DChannel, DMember, DMessage, DServer, D
     private String[] args;
     private String[] rawArgs;
 
-    public DContext(Command command, DMessage message, String[] args, String[] rawArgs) {
+    public DContext(Command<DContext> command, DMessage message, String[] args, String[] rawArgs) {
         this.command = command;
         this.message = message;
         IMessage iMessage = message.getMessage();
@@ -30,7 +30,7 @@ public class DContext implements Context<DChannel, DMember, DMessage, DServer, D
     }
 
     @Override
-    public Command getCommand() {
+    public Command<DContext> getCommand() {
         return command;
     }
 

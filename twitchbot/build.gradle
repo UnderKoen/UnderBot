@@ -1,0 +1,32 @@
+group 'nl.underkoen'
+version '0.3.6'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven {
+        url 'https://mvn.makertim.nl/repository/MakerTim/'
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'nl.makertim.functionalmaker', name: 'Chat', version: '1.74'
+    compile project(':chatbot')
+    //Doesn't add to fatJar
+    compileOnly project(':underbot')
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'nl.underkoen.twitchbot.TwitchBot'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}

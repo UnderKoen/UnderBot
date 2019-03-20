@@ -32,7 +32,7 @@ public class HelpCommand implements DCommand {
     public void trigger(DContext context) {
         new HelpMessage()
                 .setMention(context.getMember())
-                //.showSubcommands(true)
+                .showSubcommands(true)
                 .addCommands(DiscordBot.handler.getCommands())
                 .sendMessage(context.getChannel());
     }
