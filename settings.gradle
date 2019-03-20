@@ -1,0 +1,8 @@
+rootProject.name = 'Underbot'
+include 'underbot'
+include 'discordbot'
+include 'auth'
+include 'twitchbot'
+include 'chatbot'
+include 'discordbot'
+
