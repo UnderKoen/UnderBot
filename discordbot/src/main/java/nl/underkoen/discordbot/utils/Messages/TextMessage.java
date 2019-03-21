@@ -2,12 +2,12 @@ package nl.underkoen.discordbot.utils.Messages;
 
 import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.utils.ColorUtil;
-import sx.blah.discord.handle.impl.obj.Embed;
-import sx.blah.discord.handle.obj.IEmbed;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.dv8tion.jda.core.entities.MessageEmbed.Field;
 
 /**
  * Created by Under_Koen on 21-04-17.
@@ -23,7 +23,7 @@ public class TextMessage extends UnderMessage {
 
     private String url;
 
-    private List<IEmbed.IEmbedField> fields;
+    private List<Field> fields;
 
     public TextMessage setMention(DMember user) {
         this.user = user;
@@ -55,7 +55,7 @@ public class TextMessage extends UnderMessage {
         if (value == null || value.isEmpty()) {
             value = "\u200E";
         }
-        fields.add(new Embed.EmbedField(name, value, inline));
+        fields.add(new Field(name, value, inline));
         return this;
     }
 
@@ -96,7 +96,7 @@ public class TextMessage extends UnderMessage {
     }
 
     @Override
-    public List<IEmbed.IEmbedField> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 }

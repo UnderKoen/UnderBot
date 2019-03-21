@@ -1,6 +1,7 @@
 package nl.underkoen.discordbot.music.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import nl.underkoen.chatbot.models.RankAccessible;
 import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.Roles;
@@ -40,8 +41,8 @@ public class ForceNextCommand implements DCommand, RankAccessible {
 
     @Override
     public void trigger(DContext context) {
-        if (context.getMember().getVoiceState().getChannel() != DiscordBot.getSelfMember(context.getServer()).getVoiceState().getChannel()) {
-            new ErrorMessage(context.getMember(), "You need to be in " + DiscordBot.getSelfMember(context.getServer()).getVoiceState().getChannel().getName()).sendMessage(context.getChannel());
+        if (context.getMember().getVoiceState().getAudioChannel() != DiscordBot.getSelfMember(context.getServer()).getVoiceState().getAudioChannel()) {
+            new ErrorMessage(context.getMember(), "You need to be in " + ((VoiceChannel) DiscordBot.getSelfMember(context.getServer()).getVoiceState().getAudioChannel()).getName()).sendMessage(context.getChannel());
             return;
         }
         if (!MusicHandler.isPlayingMusic(context.getServer())) {

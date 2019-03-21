@@ -1,5 +1,6 @@
 package nl.underkoen.discordbot.music.commands;
 
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import nl.underkoen.chatbot.models.RankAccessible;
 import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.Roles;
@@ -46,12 +47,12 @@ public class LeaveCommand implements DCommand, RankAccessible {
     @Override
     public void trigger(DContext context) {
         DMember member = context.getMember();
-        if (DiscordBot.getSelfMember(context.getServer()).getVoiceState().getChannel() == null) {
+        if (DiscordBot.getSelfMember(context.getServer()).getVoiceState().getAudioChannel() == null) {
             new ErrorMessage(member, "The bot needs to be in a voice channel").sendMessage(context.getChannel());
             return;
         }
-        new TextMessage().addText("Just leaved: " + context.getMember()
-                .getVoiceState().getChannel().getName()).setMention(context.getMember()).sendMessage(context.getChannel());
+        new TextMessage().addText("Just leaved: " + ((VoiceChannel) context.getMember()
+                .getVoiceState().getAudioChannel()).getName()).setMention(context.getMember()).sendMessage(context.getChannel());
         MusicCommand.musicHandler.leave(context.getServer());
     }
 }

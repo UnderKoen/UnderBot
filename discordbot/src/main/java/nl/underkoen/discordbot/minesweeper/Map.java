@@ -11,44 +11,33 @@ import java.util.Random;
 public class Map {
     private ArrayList<Location> bombs;
 
-    private java.util.Map<Location, TileType> outline;
-    private java.util.Map<Location, TileType> map;
     private java.util.Map<Location, TileType> completedMap;
-    private java.util.Map<Location, TileType> visibleMap;
 
     private final int AMOUNT_OF_BOMBS = 10;
 
-    Map() {
-        outline = new HashMap<>();
-        for (int y = -2; y < 9; y++) {
-            for (int x = -2; x < 9; x++) {
-                if (x >= 0 && y >= 0) continue;
-                Location loc = new Location(x, y);
-                outline.put(loc, getOutlineType(loc));
-            }
-        }
-
-        map = new HashMap<>();
+    public Map() {
+        List<Location> map = new ArrayList<>();
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 Location loc = new Location(x, y);
-                map.put(loc, TileType.NOTYET);
+                map.add(loc);
             }
         }
+
         completedMap = new HashMap<>();
         bombs = new ArrayList<>();
         for (int i = 0; i < AMOUNT_OF_BOMBS; i++) {
             int random = new Random().nextInt(81);
-            Location loc = (Location) map.keySet().toArray()[random];
-            while (map.get(loc) == TileType.BOMB) {
+            Location loc = (Location) map.toArray()[random];
+            while (completedMap.get(loc) == TileType.BOMB) {
                 random = new Random().nextInt(81);
-                loc = (Location) map.keySet().toArray()[random];
+                loc = (Location) map.toArray()[random];
             }
             bombs.add(loc);
             completedMap.put(loc, TileType.BOMB);
         }
 
-        for (Location loc : map.keySet()) {
+        for (Location loc : map) {
             if (completedMap.get(getLocationFromCompletedMap(loc.getX(), loc.getY())) == TileType.BOMB) continue;
             int bombs = 0;
             for (Location loc2 : getTilesAroundTile(loc)) {
@@ -88,34 +77,6 @@ public class Map {
             }
             completedMap.put(loc, type);
         }
-        updateMap();
-    }
-
-    private void updateMap() {
-        visibleMap = new HashMap<>();
-        visibleMap.putAll(map);
-        visibleMap.putAll(outline);
-    }
-
-    public void flagTile(Location loc) {
-        map.replace(loc, TileType.FLAG);
-        updateMap();
-    }
-
-    public void openTile(Location loc) {
-        map.replace(loc, completedMap.get(getLocationFromCompletedMap(loc.getX(), loc.getY())));
-        if (completedMap.get(getLocationFromCompletedMap(loc.getX(), loc.getY())) == TileType.NOTHING) {
-            for (Location loc2 : getTilesAroundTile(loc)) {
-                if (completedMap.get(loc2) == TileType.NOTHING &&
-                        map.get(getLocationFromVisibleMap(loc2.getX(), loc2.getY())) != TileType.NOTHING) {
-                    openTile(loc2);
-                }
-                if (loc2 != null) {
-                    map.replace(loc2, completedMap.get(getLocationFromCompletedMap(loc2.getX(), loc2.getY())));
-                }
-            }
-        }
-        updateMap();
     }
 
     private List<Location> getTilesAroundTile(Location loc) {
@@ -130,22 +91,6 @@ public class Map {
         }
         return tiles;
     }
-
-    private Location getLocationFromOutline(int x, int y) {
-        for (Location loc : outline.keySet()) {
-            if (loc.getX() == x && loc.getY() == y) return loc;
-        }
-        return null;
-    }
-
-    public Location getLocationFromVisibleMap(int x, int y) {
-        if (!(x >= 0 && y >= 0)) return getLocationFromOutline(x, y);
-        for (Location loc : map.keySet()) {
-            if (loc.getX() == x && loc.getY() == y) return loc;
-        }
-        return null;
-    }
-
     private Location getLocationFromCompletedMap(int x, int y) {
         for (Location loc : completedMap.keySet()) {
             if (loc.getX() == x && loc.getY() == y) return loc;
@@ -153,40 +98,17 @@ public class Map {
         return null;
     }
 
-    String toMessage() {
+    public String toMessage() {
         StringBuilder string = new StringBuilder();
-        for (int y = -2; y < 9; y++) {
-            for (int x = -2; x < 9; x++) {
-                Location loc = getLocationFromVisibleMap(x, y);
-                string.append(TileEmote.getTileEmote(visibleMap.get(loc)));
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                Location loc = getLocationFromCompletedMap(x, y);
+                string.append("||");
+                string.append(TileEmote.getTileEmote(completedMap.get(loc)));
+                string.append("||");
             }
             string.append("\n");
         }
         return string.toString();
-    }
-
-    private TileType getOutlineType(Location loc) {
-        int x = loc.getX();
-        int y = loc.getY();
-        if (x == -2 && y < 0 || y == -2 && x < 0) {
-            return TileType.FILLING;
-        }
-        if (x == -2 && y >= 0) {
-            return TileType.valueOf("Y" + (char) (y + 65));
-        }
-        if (y == -2 && x >= 0) {
-            return TileType.valueOf("X" + (x + 1));
-        }
-        return TileType.OUTLINE;
-    }
-
-    public boolean isFinished() {
-        int foundBombs = 0;
-        for (Location bombLoc : bombs) {
-            if (map.get(getLocationFromVisibleMap(bombLoc.getX(), bombLoc.getY())) == TileType.FLAG) {
-                foundBombs++;
-            }
-        }
-        return foundBombs == AMOUNT_OF_BOMBS;
     }
 }

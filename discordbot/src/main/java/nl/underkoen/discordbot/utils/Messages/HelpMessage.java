@@ -1,5 +1,7 @@
 package nl.underkoen.discordbot.utils.Messages;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Role;
 import nl.underkoen.chatbot.commands.MainCommand;
 import nl.underkoen.chatbot.models.Command;
 import nl.underkoen.chatbot.models.RankAccessible;
@@ -9,13 +11,12 @@ import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.utils.ColorUtil;
 import nl.underkoen.discordbot.utils.RoleUtil;
-import sx.blah.discord.handle.impl.obj.Embed;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.dv8tion.jda.core.entities.MessageEmbed.Field;
 
 /**
  * Created by Under_Koen on 21-04-17.
@@ -86,14 +87,14 @@ public class HelpMessage extends UnderMessage {
             role = RoleUtil.getHighestRole(author).getPosition();
         }
 
-        List<IRole> roles = new ArrayList<>(channel.getServer().getGuild().getRoles());
+        List<Role> roles = new ArrayList<>(channel.getServer().getGuild().getRoles());
         int finalRole = role;
         List<Command> mainCommands = new ArrayList<>();
         roles.forEach(role1 -> {
             if (role1.getPosition() > finalRole) return;
             List<Command> roleCommands = new ArrayList<>(commands);
             roleCommands.removeIf(command -> {
-                if (!(command instanceof RankAccessible)) return !role1.isEveryoneRole();
+                if (!(command instanceof RankAccessible)) return !role1.isPublicRole();
                 RankAccessible cmd = (RankAccessible) command;
                 return role1.getPosition() != cmd.getMinimumRank();
 
@@ -107,7 +108,7 @@ public class HelpMessage extends UnderMessage {
                 }
             });
             if (!builder.toString().isEmpty())
-                msg.appendField(new Embed.EmbedField((role1.getPosition() != 0) ? role1.getName() : "Everyone", builder.toString(), false));
+                msg.addField(new Field((role1.getPosition() != 0) ? role1.getName() : "Everyone", builder.toString(), false));
         });
         mainCommands.forEach(command -> {
             StringBuilder builder = new StringBuilder();
@@ -120,7 +121,7 @@ public class HelpMessage extends UnderMessage {
             String firstLetter = ((Character) cmdName.charAt(0)).toString();
             cmdName = cmdName.replaceFirst(firstLetter, firstLetter.toUpperCase());
             if (!builder.toString().isEmpty())
-                msg.appendField(new Embed.EmbedField(cmdName, builder.toString(), false));
+                msg.addField(new Field(cmdName, builder.toString(), false));
         });
     }
 }

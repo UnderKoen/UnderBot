@@ -24,7 +24,7 @@ public class MusicCommand extends DMainCommand {
 
     public MusicCommand() {
         MusicCommand.musicHandler = new MusicHandler();
-        DiscordBot.client.getDispatcher().registerListener(musicHandler);
+        DiscordBot.client.addEventListener(musicHandler);
     }
 
     @Override

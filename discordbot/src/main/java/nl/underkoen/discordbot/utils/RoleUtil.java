@@ -1,40 +1,40 @@
 package nl.underkoen.discordbot.utils;
 
+import net.dv8tion.jda.core.entities.Role;
 import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.entities.DServer;
-import sx.blah.discord.handle.obj.IRole;
 
 /**
  * Created by Under_Koen on 06-05-17.
  */
 public class RoleUtil {
-    public static IRole getHighestRole(DMember user) {
-        IRole highest = user.getServer().getGuild().getEveryoneRole();
-        for (IRole role : user.getRoles()) {
+    public static Role getHighestRole(DMember user) {
+        Role highest = user.getServer().getGuild().getPublicRole();
+        for (Role role : user.getRoles()) {
             if (highest.getPosition() >= role.getPosition()) continue;
             highest = role;
         }
         return highest;
     }
 
-    public static IRole getHighestRole(DServer server) {
-        IRole highest = server.getGuild().getEveryoneRole();
-        for (IRole role : server.getGuild().getRoles()) {
+    public static Role getHighestRole(DServer server) {
+        Role highest = server.getGuild().getPublicRole();
+        for (Role role : server.getGuild().getRoles()) {
             if (highest.getPosition() >= role.getPosition()) continue;
             highest = role;
         }
         return highest;
     }
 
-    public static IRole getRole(DServer server, int position) {
-        IRole role = null;
-        for (IRole rol : server.getGuild().getRoles()) {
+    public static Role getRole(DServer server, int position) {
+        Role role = null;
+        for (Role rol : server.getGuild().getRoles()) {
             if (position != rol.getPosition()) continue;
             role = rol;
         }
         if (role != null) return role;
         int lowest = 0;
-        for (IRole rol : server.getGuild().getRoles()) {
+        for (Role rol : server.getGuild().getRoles()) {
             if (position < rol.getPosition()) continue;
             if (!(lowest < rol.getPosition() || lowest == 0)) continue;
             lowest = rol.getPosition();

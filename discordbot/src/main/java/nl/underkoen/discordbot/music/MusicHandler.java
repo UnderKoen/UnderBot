@@ -4,16 +4,18 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
 import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.entities.DChannel;
 import nl.underkoen.discordbot.entities.DContext;
 import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.entities.DServer;
 import nl.underkoen.discordbot.utils.Messages.TextMessage;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
-import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
-import sx.blah.discord.handle.obj.IVoiceChannel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +23,7 @@ import java.util.Map;
 /**
  * Created by Under_Koen on 10-05-17.
  */
-public class MusicHandler {
+public class MusicHandler implements EventListener {
     public static AudioPlayerManager playerManager;
     public static Map<Long, GuildMusicManager> musicManagers;
 
@@ -35,7 +37,7 @@ public class MusicHandler {
     }
 
     public static synchronized GuildMusicManager getGuildAudioPlayer(DServer server) {
-        long guildId = server.getGuild().getLongID();
+        long guildId = server.getGuild().getIdLong();
         GuildMusicManager musicManager = musicManagers.get(guildId);
 
         if (musicManager == null) {
@@ -43,7 +45,7 @@ public class MusicHandler {
             musicManagers.put(guildId, musicManager);
         }
 
-        server.getGuild().getAudioManager().setAudioProvider(musicManager.getAudioProvider());
+        server.getGuild().getAudioManager().setSendingHandler(musicManager.getAudioProvider());
 
         return musicManager;
     }
@@ -57,12 +59,12 @@ public class MusicHandler {
         musicManager.scheduler.queue(track, context);
     }
 
-    public void joinChannel(IVoiceChannel channel) {
-        channel.join();
+    public void joinChannel(VoiceChannel channel) {
+        channel.getGuild().getAudioManager().openAudioConnection(channel);
     }
 
     public void leave(DServer server) {
-        server.getGuild().getConnectedVoiceChannel().leave();
+        server.getGuild().getAudioManager().closeAudioConnection();
         getGuildAudioPlayer(server).scheduler.clearQueue();
         getGuildAudioPlayer(server).player.stopTrack();
     }
@@ -103,45 +105,56 @@ public class MusicHandler {
         return getGuildAudioPlayer(server).scheduler.getQueue();
     }
 
-    @EventSubscriber
-    public void onGuildVoiceJoin(UserVoiceChannelLeaveEvent event) {
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof GuildVoiceJoinEvent) {
+            GuildVoiceJoinEvent joinEvent = (GuildVoiceJoinEvent) event;
+            onGuildVoiceJoin(joinEvent);
+        } else if (event instanceof GuildVoiceLeaveEvent) {
+            GuildVoiceLeaveEvent leaveEvent = (GuildVoiceLeaveEvent) event;
+            onGuildVoiceLeave(leaveEvent);
+        } else if (event instanceof GuildVoiceMoveEvent) {
+            GuildVoiceMoveEvent moveEvent = (GuildVoiceMoveEvent) event;
+            onGuildVoiceMove(moveEvent);
+        }
+    }
+
+    public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
         DServer server = DServer.getServer(event.getGuild());
         if (!isPlayingMusic(server)) return;
-        IVoiceChannel channel = event.getVoiceChannel();
-        if (DMember.getMember(server, DiscordBot.client.getOurUser()).getVoiceState().getChannel() == channel) {
+        VoiceChannel channel = event.getChannelJoined();
+        if (DMember.getMember(server, DiscordBot.client.getSelfUser()).getVoiceState().getAudioChannel() == channel) {
             getGuildAudioPlayer(server).scheduler.setPause(false);
-            if (channel.getConnectedUsers().size() == 2) {
+            if (channel.getMembers().size() == 2) {
                 new TextMessage().addText("Just unpaused: [" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().title + "](" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().uri + ")").sendMessage(MusicHandler.channel);
             }
         }
     }
 
-    @EventSubscriber
-    public void onGuildVoiceLeave(UserVoiceChannelLeaveEvent event) {
+    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
         DServer server = DServer.getServer(event.getGuild());
         if (!isPlayingMusic(server)) return;
-        IVoiceChannel channel = event.getVoiceChannel();
-        if (DMember.getMember(server, DiscordBot.client.getOurUser()).getVoiceState().getChannel() == channel) {
-            if (channel.getConnectedUsers().size() == 1) {
+        VoiceChannel channel = event.getChannelLeft();
+        if (DMember.getMember(server, DiscordBot.client.getSelfUser()).getVoiceState().getAudioChannel() == channel) {
+            if (channel.getMembers().size() == 1) {
                 getGuildAudioPlayer(server).scheduler.setPause(true);
                 new TextMessage().addText("Just paused: [" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().title + "](" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().uri + ")").sendMessage(MusicHandler.channel);
             }
         }
     }
 
-    @EventSubscriber
-    public void onGuildVoiceMove(UserVoiceChannelMoveEvent event) {
+    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
         DServer server = DServer.getServer(event.getGuild());
         if (!isPlayingMusic(server)) return;
-        IVoiceChannel channel = event.getOldChannel();
-        if (DMember.getMember(server, DiscordBot.client.getOurUser()).getVoiceState().getChannel() == channel) {
-            if (channel.getConnectedUsers().size() == 1) {
+        VoiceChannel channel = event.getChannelLeft();
+        if (DMember.getMember(server, DiscordBot.client.getSelfUser()).getVoiceState().getAudioChannel() == channel) {
+            if (channel.getMembers().size() == 1) {
                 getGuildAudioPlayer(server).scheduler.setPause(true);
                 new TextMessage().addText("Just paused: [" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().title + "](" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().uri + ")").sendMessage(MusicHandler.channel);
             }
-        } else if (DMember.getMember(server, DiscordBot.client.getOurUser()).getVoiceState().getChannel() == event.getNewChannel()) {
+        } else if (DMember.getMember(server, DiscordBot.client.getSelfUser()).getVoiceState().getAudioChannel() == event.getChannelJoined()) {
             getGuildAudioPlayer(server).scheduler.setPause(false);
-            if (event.getNewChannel().getConnectedUsers().size() == 2) {
+            if (event.getChannelJoined().getMembers().size() == 2) {
                 new TextMessage().addText("Just unpaused: [" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().title + "](" + getGuildAudioPlayer(server).player.getPlayingTrack().getInfo().uri + ")").sendMessage(MusicHandler.channel);
             }
         }

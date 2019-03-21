@@ -1,7 +1,6 @@
 package nl.underkoen.discordbot.entities;
 
-import nl.underkoen.chatbot.models.User;
-import sx.blah.discord.handle.obj.IUser;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +8,10 @@ import java.util.List;
 /**
  * Created by Under_Koen on 30/08/2018.
  */
-public class DUser implements User {
+public class DUser implements nl.underkoen.chatbot.models.User {
     private static List<DUser> users = new ArrayList<>();
 
-    public static DUser getUser(IUser user) {
+    public static DUser getUser(User user) {
         return users.stream()
                 .filter(dUser -> dUser.getUser().equals(user))
                 .findFirst()
@@ -23,9 +22,9 @@ public class DUser implements User {
                 });
     }
 
-    private IUser user;
+    private User user;
 
-    private DUser(IUser user) {
+    private DUser(User user) {
         this.user = user;
     }
 
@@ -34,7 +33,7 @@ public class DUser implements User {
         return user.getName();
     }
 
-    public IUser getUser() {
+    public User getUser() {
         return user;
     }
 }

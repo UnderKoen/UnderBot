@@ -1,33 +1,32 @@
 package nl.underkoen.discordbot.entities;
 
-import nl.underkoen.chatbot.models.Message;
-import sx.blah.discord.handle.obj.IMessage;
+import net.dv8tion.jda.core.entities.Message;
 
 /**
  * Created by Under_Koen on 30/08/2018.
  */
-public class DMessage implements Message<DChannel, DMember, DServer, DUser> {
-    private IMessage message;
+public class DMessage implements nl.underkoen.chatbot.models.Message<DChannel, DMember, DServer, DUser> {
+    private Message message;
     private DUser user;
     private DChannel channel;
     private DServer server;
     private DMember member;
 
-    public DMessage(IMessage message) {
+    public DMessage(Message message) {
         this.message = message;
         this.user = DUser.getUser(message.getAuthor());
-        this.channel = DChannel.getChannel(message.getChannel());
+        this.channel = DChannel.getChannel(message.getTextChannel());
         this.server = DServer.getServer(message.getGuild());
         this.member = DMember.getMember(server, user);
     }
 
     @Override
     public String getContent() {
-        return message.getFormattedContent();
+        return message.getContentDisplay();
     }
 
     public String getRawContent() {
-        return message.getContent();
+        return message.getContentRaw();
     }
 
     @Override
@@ -50,7 +49,7 @@ public class DMessage implements Message<DChannel, DMember, DServer, DUser> {
         return member;
     }
 
-    public IMessage getMessage() {
+    public Message getMessage() {
         return message;
     }
 }

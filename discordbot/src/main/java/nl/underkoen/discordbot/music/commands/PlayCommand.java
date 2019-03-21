@@ -49,7 +49,7 @@ public class PlayCommand implements DCommand {
             new ErrorMessage(context.getMember(), "This command needs arguments to work").sendMessage(context.getChannel());
             return;
         }
-        if (DiscordBot.getSelfMember(context.getServer()).getVoiceState().getChannel() == null) {
+        if (DiscordBot.getSelfMember(context.getServer()).getVoiceState().getAudioChannel() == null) {
             new ErrorMessage(context.getMember(), "Bot needs to be in a voice channel").sendMessage(context.getChannel());
             return;
         }

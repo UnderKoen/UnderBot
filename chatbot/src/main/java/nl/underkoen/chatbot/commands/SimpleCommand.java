@@ -16,7 +16,7 @@ public class SimpleCommand<CON extends Context> implements Command<CON> {
     private Messager<CON> messager;
 
     public SimpleCommand(String prefix, String command, String description, Supplier<String> response) {
-        SimpleCommand(prefix, command, description, response, );
+        this(prefix, command, description, response, null);
     }
 
     public SimpleCommand(String prefix, String command, String description, Supplier<String> response, Messager<CON> messager) {

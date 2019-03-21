@@ -7,12 +7,8 @@ sourceCompatibility = 1.8
 
 repositories {
     jcenter()
-    maven {
-        url 'https://mvn.makertim.nl/repository/MakerTim/'
-    }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'nl.makertim.functionalmaker', name: 'Reflection', version: '1.77'
 }

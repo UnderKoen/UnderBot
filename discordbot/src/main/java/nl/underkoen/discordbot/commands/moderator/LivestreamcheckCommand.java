@@ -73,11 +73,11 @@ public class LivestreamcheckCommand implements DCommand, RankAccessible {
             thread.start();
             if (thread.check) {
                 new TextMessage().setMention(context.getMember())
-                        .addText("Enabled livestream check for " + thread.channel.getChannel().mention() + ".")
+                        .addText("Enabled livestream check for " + thread.channel.getChannel().getAsMention() + ".")
                         .sendMessage(context.getChannel());
             } else {
                 new TextMessage().setMention(context.getMember())
-                        .addText("Disabled livestream check for " + thread.channel.getChannel().mention() + ".")
+                        .addText("Disabled livestream check for " + thread.channel.getChannel().getAsMention() + ".")
                         .sendMessage(context.getChannel());
             }
         } else {

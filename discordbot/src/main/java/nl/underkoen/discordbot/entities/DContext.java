@@ -1,8 +1,8 @@
 package nl.underkoen.discordbot.entities;
 
+import net.dv8tion.jda.core.entities.Message;
 import nl.underkoen.chatbot.models.Command;
 import nl.underkoen.chatbot.models.Context;
-import sx.blah.discord.handle.obj.IMessage;
 
 /**
  * Created by Under_Koen on 30/08/2018.
@@ -20,9 +20,9 @@ public class DContext implements Context<DChannel, Command<DContext>, DMember, D
     public DContext(Command<DContext> command, DMessage message, String[] args, String[] rawArgs) {
         this.command = command;
         this.message = message;
-        IMessage iMessage = message.getMessage();
+        Message iMessage = message.getMessage();
         this.user = DUser.getUser(iMessage.getAuthor());
-        this.channel = DChannel.getChannel(iMessage.getChannel());
+        this.channel = DChannel.getChannel(iMessage.getTextChannel());
         this.server = DServer.getServer(iMessage.getGuild());
         this.member = DMember.getMember(this.server, this.user);
         this.args = args;
@@ -65,6 +65,6 @@ public class DContext implements Context<DChannel, Command<DContext>, DMember, D
 
     @Override
     public DServer getServer() {
-        return null;
+        return server;
     }
 }

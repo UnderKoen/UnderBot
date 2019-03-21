@@ -2,13 +2,12 @@ package nl.underkoen.discordbot.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import sx.blah.discord.handle.audio.AudioEncodingType;
-import sx.blah.discord.handle.audio.IAudioProvider;
+import net.dv8tion.jda.core.audio.AudioSendHandler;
 
 /**
  * Created by Under_Koen on 21/11/2017.
  */
-public class AudioProvider implements IAudioProvider {
+public class AudioProvider implements AudioSendHandler {
     private final AudioPlayer audioPlayer;
     private AudioFrame lastFrame;
 
@@ -17,7 +16,7 @@ public class AudioProvider implements IAudioProvider {
     }
 
     @Override
-    public boolean isReady() {
+    public boolean canProvide() {
         if (lastFrame == null) {
             lastFrame = audioPlayer.provide();
         }
@@ -26,7 +25,7 @@ public class AudioProvider implements IAudioProvider {
     }
 
     @Override
-    public byte[] provide() {
+    public byte[] provide20MsAudio() {
         if (lastFrame == null) {
             lastFrame = audioPlayer.provide();
         }
@@ -38,12 +37,7 @@ public class AudioProvider implements IAudioProvider {
     }
 
     @Override
-    public int getChannels() {
-        return 2;
-    }
-
-    @Override
-    public AudioEncodingType getAudioEncodingType() {
-        return AudioEncodingType.OPUS;
+    public boolean isOpus() {
+        return true;
     }
 }

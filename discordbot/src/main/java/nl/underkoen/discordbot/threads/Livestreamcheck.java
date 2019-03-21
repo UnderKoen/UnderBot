@@ -23,7 +23,7 @@ public class Livestreamcheck extends Thread {
         try {
             while (check) {
                 current = YoutubeUtil.getLivestream(CHANNEL_ID);
-                if (!current.isEmpty() && DiscordBot.client.isLoggedIn()) {
+                if (!current.isEmpty()) {
                     if (!current.contentEquals(last))
                         channel.sendMessage("@everyone Tim is live op https://www.youtube.com/makertim/live");
                     last = current;

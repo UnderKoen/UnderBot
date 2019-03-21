@@ -11,6 +11,16 @@
       <module name="chatbot_test" target="1.8" />
       <module name="discordbot_main" target="1.8" />
       <module name="discordbot_test" target="1.8" />
+      <module name="nl.underkoen.auth.main" target="1.8" />
+      <module name="nl.underkoen.auth.test" target="1.8" />
+      <module name="nl.underkoen.chatbot.main" target="1.8" />
+      <module name="nl.underkoen.chatbot.test" target="1.8" />
+      <module name="nl.underkoen.discordbot.main" target="1.8" />
+      <module name="nl.underkoen.discordbot.test" target="1.8" />
+      <module name="nl.underkoen.twitchbot.main" target="1.8" />
+      <module name="nl.underkoen.twitchbot.test" target="1.8" />
+      <module name="nl.underkoen.underbot.main" target="1.8" />
+      <module name="nl.underkoen.underbot.test" target="1.8" />
       <module name="twitchbot_main" target="1.8" />
       <module name="twitchbot_test" target="1.8" />
       <module name="underbot_main" target="1.8" />

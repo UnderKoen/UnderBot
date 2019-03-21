@@ -1,12 +1,12 @@
 package nl.underkoen.discordbot.utils.Messages;
 
 import nl.underkoen.discordbot.entities.DMember;
-import sx.blah.discord.handle.impl.obj.Embed;
-import sx.blah.discord.handle.obj.IEmbed;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.dv8tion.jda.core.entities.MessageEmbed.Field;
 
 /**
  * Created by Under_Koen on 19-04-17.
@@ -16,12 +16,12 @@ public class ErrorMessage extends UnderMessage {
 
     private DMember user;
 
-    private List<IEmbed.IEmbedField> fields;
+    private List<Field> fields;
 
     public ErrorMessage(DMember user, String error) {
         this.user = user;
-        fields = new ArrayList();
-        fields.add(new Embed.EmbedField("Error:", error, true));
+        fields = new ArrayList<>();
+        fields.add(new Field("Error:", error, true));
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ErrorMessage extends UnderMessage {
     }
 
     @Override
-    public List<IEmbed.IEmbedField> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 }

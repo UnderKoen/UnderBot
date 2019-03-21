@@ -1,7 +1,7 @@
 package nl.underkoen.discordbot.entities;
 
+import net.dv8tion.jda.core.entities.Guild;
 import nl.underkoen.chatbot.models.Server;
-import sx.blah.discord.handle.obj.IGuild;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class DServer implements Server<DChannel, DMember, DUser> {
     private static List<DServer> servers = new ArrayList<>();
 
-    public static DServer getServer(IGuild guild) {
+    public static DServer getServer(Guild guild) {
         return servers.stream()
                 .filter(server -> server.getGuild().equals(guild))
                 .findFirst()
@@ -24,9 +24,9 @@ public class DServer implements Server<DChannel, DMember, DUser> {
                 });
     }
 
-    private IGuild guild;
+    private Guild guild;
 
-    private DServer(IGuild guild) {
+    private DServer(Guild guild) {
         this.guild = guild;
     }
 
@@ -37,7 +37,7 @@ public class DServer implements Server<DChannel, DMember, DUser> {
 
     @Override
     public List<DChannel> getChannels() {
-        return guild.getChannels().stream()
+        return guild.getTextChannels().stream()
                 .map(DChannel::getChannel)
                 .collect(Collectors.toList());
     }
@@ -47,7 +47,7 @@ public class DServer implements Server<DChannel, DMember, DUser> {
         return DMember.getMember(this, user);
     }
 
-    public IGuild getGuild() {
+    public Guild getGuild() {
         return guild;
     }
 }

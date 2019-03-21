@@ -2,22 +2,22 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth.iml" filepath="$PROJECT_DIR$/.idea/modules/auth.iml" group="auth" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/auth_main.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/auth_main.iml" group="auth" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/auth_test.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/auth_test.iml" group="auth" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbot.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbot.iml" group="chatbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbot/chatbot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbot/chatbot_main.iml" group="chatbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbot/chatbot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbot/chatbot_test.iml" group="chatbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/discordbot.iml" filepath="$PROJECT_DIR$/.idea/modules/discordbot.iml" group="discordbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/discordbot/discordbot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/discordbot/discordbot_main.iml" group="discordbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/discordbot/discordbot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/discordbot/discordbot_test.iml" group="discordbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/projects-Underbot.iml" filepath="$PROJECT_DIR$/.idea/modules/projects-Underbot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/twitchbot.iml" filepath="$PROJECT_DIR$/.idea/modules/twitchbot.iml" group="twitchbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/twitchbot/twitchbot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/twitchbot/twitchbot_main.iml" group="twitchbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/twitchbot/twitchbot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/twitchbot/twitchbot_test.iml" group="twitchbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/underbot/underbot.iml" filepath="$PROJECT_DIR$/.idea/modules/underbot/underbot.iml" group="underbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/underbot/underbot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/underbot/underbot_main.iml" group="underbot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/underbot/underbot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/underbot/underbot_test.iml" group="underbot" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nl.underkoen.Underbot.iml" filepath="$PROJECT_DIR$/.idea/modules/nl.underkoen.Underbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/nl.underkoen.auth.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/nl.underkoen.auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/nl.underkoen.auth.main.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/nl.underkoen.auth.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/nl.underkoen.auth.test.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/nl.underkoen.auth.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbot/nl.underkoen.chatbot.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbot/nl.underkoen.chatbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbot/nl.underkoen.chatbot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbot/nl.underkoen.chatbot.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbot/nl.underkoen.chatbot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbot/nl.underkoen.chatbot.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/discordbot/nl.underkoen.discordbot.iml" filepath="$PROJECT_DIR$/.idea/modules/discordbot/nl.underkoen.discordbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/discordbot/nl.underkoen.discordbot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/discordbot/nl.underkoen.discordbot.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/discordbot/nl.underkoen.discordbot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/discordbot/nl.underkoen.discordbot.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/twitchbot/nl.underkoen.twitchbot.iml" filepath="$PROJECT_DIR$/.idea/modules/twitchbot/nl.underkoen.twitchbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/twitchbot/nl.underkoen.twitchbot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/twitchbot/nl.underkoen.twitchbot.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/twitchbot/nl.underkoen.twitchbot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/twitchbot/nl.underkoen.twitchbot.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/underbot/nl.underkoen.underbot.iml" filepath="$PROJECT_DIR$/.idea/modules/underbot/nl.underkoen.underbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/underbot/nl.underkoen.underbot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/underbot/nl.underkoen.underbot.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/underbot/nl.underkoen.underbot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/underbot/nl.underkoen.underbot.test.iml" />
     </modules>
   </component>
 </project>

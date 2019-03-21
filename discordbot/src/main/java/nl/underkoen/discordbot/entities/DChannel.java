@@ -1,7 +1,7 @@
 package nl.underkoen.discordbot.entities;
 
+import net.dv8tion.jda.core.entities.TextChannel;
 import nl.underkoen.chatbot.models.Channel;
-import sx.blah.discord.handle.obj.IChannel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,10 @@ public class DChannel implements Channel<DServer> {
     private static List<DChannel> channels = new ArrayList<>();
 
     public static DChannel getChannel(DServer server, long id) {
-        return getChannel(server.getGuild().getChannelByID(id));
+        return getChannel(server.getGuild().getTextChannelById(id));
     }
 
-    public static DChannel getChannel(IChannel channel) {
+    public static DChannel getChannel(TextChannel channel) {
         return channels.stream()
                 .filter(dChannel -> dChannel.getChannel().equals(channel))
                 .findFirst()
@@ -27,10 +27,10 @@ public class DChannel implements Channel<DServer> {
                 });
     }
 
-    IChannel channel;
-    DServer server;
+    private TextChannel channel;
+    private DServer server;
 
-    private DChannel(IChannel channel) {
+    private DChannel(TextChannel channel) {
         this.channel = channel;
         this.server = DServer.getServer(channel.getGuild());
     }
@@ -50,7 +50,7 @@ public class DChannel implements Channel<DServer> {
         return server;
     }
 
-    public IChannel getChannel() {
+    public TextChannel getChannel() {
         return channel;
     }
 }

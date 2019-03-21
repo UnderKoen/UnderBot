@@ -1,19 +1,16 @@
 package nl.underkoen.discordbot;
 
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
 import nl.underkoen.chatbot.CommandLoader;
 import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.entities.DServer;
-import nl.underkoen.discordbot.minesweeper.commands.MinesweeperCommand;
 import nl.underkoen.discordbot.music.commands.MusicCommand;
 import nl.underkoen.discordbot.utils.KeyLoaderUtil;
 import nl.underkoen.underbot.models.Module;
 import nl.underkoen.underbot.models.ModuleInfo;
 import nl.underkoen.underbot.models.Status;
 import nl.underkoen.underbot.utils.ModuleFileUtil;
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.modules.Configuration;
 
 import java.io.File;
 import java.util.Timer;
@@ -22,16 +19,11 @@ import java.util.Timer;
  * Created by Under_Koen on 20/11/2017.
  */
 public class DiscordBot extends Module {
-    public static IDiscordClient client;
+    public static JDA client;
     public static DCommandHandler handler;
     public static KeyLoaderUtil keys;
     public static ModuleFileUtil moduleFileUtil;
     public static Timer timer;
-
-    static {
-        Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
-        Configuration.LOAD_EXTERNAL_MODULES = false;
-    }
 
     public static final String VERSION = "0.3.7";
 
@@ -50,7 +42,7 @@ public class DiscordBot extends Module {
     }
 
     public static DMember getSelfMember(DServer server) {
-        return DMember.getMember(server, client.getOurUser());
+        return DMember.getMember(server, client.getSelfUser());
     }
 
     @Override
@@ -98,15 +90,11 @@ public class DiscordBot extends Module {
         super.start();
         status = Status.RUNNING;
 
-        ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.withToken(keys.getDiscordKey());
-        client = clientBuilder.login();
-        EventDispatcher dispatcher = client.getDispatcher();
-        dispatcher.registerListener(handler);
+        client = new JDABuilder(keys.getDiscordKey()).build();
+        client.addEventListener(handler);
 
         CommandLoader.loadCommands("nl.underkoen.discordbot.commands", handler);
         handler.registerCommand(new MusicCommand());
-        handler.registerCommand(new MinesweeperCommand());
         return true;
     }
 
@@ -120,7 +108,7 @@ public class DiscordBot extends Module {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        client.logout();
+        client.shutdown();
     }
 
     @Override
@@ -133,7 +121,7 @@ public class DiscordBot extends Module {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        client.logout();
+        client.shutdown();
     }
 
     private Status status = Status.NONE;

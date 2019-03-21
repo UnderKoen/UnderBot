@@ -1,5 +1,11 @@
 package nl.underkoen.discordbot;
 
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
 import nl.underkoen.chatbot.CommandHandler;
 import nl.underkoen.chatbot.models.Command;
 import nl.underkoen.chatbot.models.RankAccessible;
@@ -9,32 +15,36 @@ import nl.underkoen.discordbot.entities.DMember;
 import nl.underkoen.discordbot.entities.DMessage;
 import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.RoleUtil;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.ActivityType;
-import sx.blah.discord.handle.obj.StatusType;
 
 import java.util.Arrays;
 
 /**
  * Created by Under_Koen on 30/08/2018.
  */
-public class DCommandHandler extends CommandHandler<Command<DContext>, DContext, DMessage> {
-    @EventSubscriber
+public class DCommandHandler extends CommandHandler<Command<DContext>, DContext, DMessage>  implements EventListener {
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof ReadyEvent) {
+            ReadyEvent readyEvent = (ReadyEvent) event;
+            onReady(readyEvent);
+        } else if (event instanceof MessageReceivedEvent) {
+            MessageReceivedEvent messageReceivedEvent = (MessageReceivedEvent) event;
+            handle(messageReceivedEvent);
+        }
+    }
+
     public void onReady(ReadyEvent event) {
-        DiscordBot.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, "/help -> for help");
+        DiscordBot.client.getPresence().setPresence(OnlineStatus.ONLINE, Game.playing("/help -> for help"));
         setup();
     }
 
-    @EventSubscriber
     public void handle(MessageReceivedEvent event) {
         try {
             check(new DMessage(event.getMessage()));
         } catch (Exception err) {
             err.printStackTrace();
             new ErrorMessage(DMember.getMember(event.getGuild(), event.getAuthor()), "Something went wrong.")
-                    .sendMessage(DChannel.getChannel(event.getChannel()));
+                    .sendMessage(DChannel.getChannel(event.getTextChannel()));
         }
     }
 

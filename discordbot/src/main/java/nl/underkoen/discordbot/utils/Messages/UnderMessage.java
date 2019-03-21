@@ -1,17 +1,18 @@
 package nl.underkoen.discordbot.utils.Messages;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Message;
 import nl.underkoen.discordbot.DiscordBot;
 import nl.underkoen.discordbot.entities.DChannel;
 import nl.underkoen.discordbot.entities.DMember;
-import sx.blah.discord.handle.obj.IEmbed.IEmbedField;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
+import static net.dv8tion.jda.core.entities.MessageEmbed.Field;
 
 /**
  * Created by Under_Koen on 19-04-17.
@@ -21,7 +22,7 @@ public abstract class UnderMessage {
 
     public abstract DMember getAuthor();
 
-    public List<IEmbedField> getFields() {
+    public List<Field> getFields() {
         return new ArrayList<>();
     }
 
@@ -45,37 +46,35 @@ public abstract class UnderMessage {
 
         Color color = getColor();
         if (color != null) {
-            msg.withColor(color);
+            msg.setColor(color);
         }
 
         DMember author = getAuthor();
         if (author != null) {
-            msg.withFooterText(author.getEffectiveName());
-            msg.withFooterIcon(author.getUser().getUser().getAvatarURL());
+            msg.setFooter(author.getEffectiveName(), author.getUser().getUser().getAvatarUrl());
         }
 
-        List<IEmbedField> fields = getFields();
+        List<Field> fields = getFields();
         if (fields != null) {
-            for (IEmbedField field : fields) {
-                msg.appendField(field);
+            for (Field field : fields) {
+                msg.addField(field);
             }
         }
 
         String desc = getDescription();
         if (desc != null) {
-            msg.withDescription(desc);
+            msg.setDescription(desc);
         }
 
         String title = getTitle();
         String url = getUrl();
         if (title != null) {
-            msg.withTitle(title);
-            msg.withUrl(url);
+            msg.setTitle(title, url);
         }
 
         lastCheck(msg, channel);
 
-        IMessage ms = channel.getChannel().sendMessage(msg.build());
+        Message ms = channel.getChannel().sendMessage(msg.build()).complete();
 
         DiscordBot.timer.schedule(
                 new TimerTask() {

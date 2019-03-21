@@ -1,16 +1,16 @@
 package nl.underkoen.discordbot.entities;
 
+import lombok.Getter;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
 import nl.underkoen.chatbot.models.Member;
 import nl.underkoen.discordbot.utils.RoleUtil;
-import sx.blah.discord.handle.obj.*;
 
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Created by Under_Koen on 20/11/2017.
@@ -18,15 +18,19 @@ import java.util.Set;
 public class DMember implements Member<DServer, DUser> {
     private static List<DMember> members = new ArrayList<>();
 
-    public static DMember getMember(IGuild guild, IUser user) {
+    public static DMember getMember(net.dv8tion.jda.core.entities.Member member) {
+        return getMember(member.getGuild(), member.getUser());
+    }
+
+    public static DMember getMember(Guild guild, User user) {
         return getMember(DServer.getServer(guild), DUser.getUser(user));
     }
 
-    public static DMember getMember(DServer server, IUser user) {
+    public static DMember getMember(DServer server, User user) {
         return getMember(server, DUser.getUser(user));
     }
 
-    public static DMember getMember(IGuild guild, DUser user) {
+    public static DMember getMember(Guild guild, DUser user) {
         return getMember(DServer.getServer(guild), user);
     }
 
@@ -42,12 +46,16 @@ public class DMember implements Member<DServer, DUser> {
                 });
     }
 
-    DServer server;
-    DUser user;
+    private DServer server;
+    private DUser user;
+
+    @Getter
+    private net.dv8tion.jda.core.entities.Member member;
 
     private DMember(DServer server, DUser user) {
         this.server = server;
         this.user = user;
+        this.member = server.getGuild().getMember(user.getUser());
     }
 
     @Override
@@ -66,50 +74,50 @@ public class DMember implements Member<DServer, DUser> {
     }
 
     public LocalDateTime getJoinDate() {
-        return LocalDateTime.ofInstant(server.getGuild().getJoinTimeForUser(user.getUser()), ZoneOffset.UTC);
+        return member.getJoinDate().toLocalDateTime();
     }
 
-    public IVoiceState getVoiceState() {
-        return user.getUser().getVoiceStateForGuild(server.getGuild());
+    public VoiceState getVoiceState() {
+        return member.getVoiceState();
     }
 
-    public Optional<String> getGame() {
-        return user.getUser().getPresence().getText();
+    public String getGame() {
+        return member.getGame().getName();
     }
 
-    public StatusType getOnlineStatus() {
-        return user.getUser().getPresence().getStatus();
+    public OnlineStatus getOnlineStatus() {
+        return member.getOnlineStatus();
     }
 
     public String getNickName() {
-        return user.getUser().getNicknameForGuild(server.getGuild());
+        return member.getNickname();
     }
 
     public String getEffectiveName() {
-        return user.getUser().getDisplayName(server.getGuild());
+        return member.getEffectiveName();
     }
 
     public String getAsMention() {
-        return user.getUser().mention();
+        return member.getAsMention();
     }
 
-    public List<IRole> getRoles() {
-        return user.getUser().getRolesForGuild(server.getGuild());
+    public List<Role> getRoles() {
+        return member.getRoles();
     }
 
     public Color getColor() {
-        return user.getUser().getColorForGuild(server.getGuild());
+        return member.getColor();
     }
 
-    public Set<Permissions> getPermissions(IChannel channel) {
-        return channel.getModifiedPermissions(user.getUser());
+    public List<Permission> getPermissions(Channel channel) {
+        return member.getPermissions(channel);
     }
 
-    public Set<Permissions> getPermissions() {
-        return user.getUser().getPermissionsForGuild(server.getGuild());
+    public List<Permission> getPermissions() {
+        return member.getPermissions();
     }
 
     public boolean isOwner() {
-        return server.getGuild().getOwner().equals(user.getUser());
+        return member.isOwner();
     }
 }

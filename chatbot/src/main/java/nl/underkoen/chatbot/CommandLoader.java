@@ -1,7 +1,7 @@
 package nl.underkoen.chatbot;
 
-import nl.makertim.functionalmaker.reflection.ClassFinder;
 import nl.underkoen.chatbot.models.Command;
+import nl.underkoen.chatbot.utils.ClassFinder;
 
 import java.util.Objects;
 

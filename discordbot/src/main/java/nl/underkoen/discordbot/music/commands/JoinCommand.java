@@ -1,5 +1,6 @@
 package nl.underkoen.discordbot.music.commands;
 
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import nl.underkoen.chatbot.models.RankAccessible;
 import nl.underkoen.discordbot.Roles;
 import nl.underkoen.discordbot.entities.DCommand;
@@ -46,13 +47,13 @@ public class JoinCommand implements DCommand, RankAccessible {
     @Override
     public void trigger(DContext context) {
         DMember member = context.getMember();
-        if (member.getVoiceState().getChannel() == null) {
+        if (member.getVoiceState().getAudioChannel() == null) {
             new ErrorMessage(member, "You need to be in a voice channel").sendMessage(context.getChannel());
             return;
         }
         MusicHandler.channel = context.getChannel();
-        new TextMessage().addText("Just joined: " + context.getMember()
-                .getVoiceState().getChannel().getName()).setMention(context.getMember()).sendMessage(context.getChannel());
-        MusicCommand.musicHandler.joinChannel(context.getMember().getVoiceState().getChannel());
+        new TextMessage().addText("Just joined: " + ((VoiceChannel) context.getMember()
+                .getVoiceState().getAudioChannel()).getName()).setMention(context.getMember()).sendMessage(context.getChannel());
+        MusicCommand.musicHandler.joinChannel((VoiceChannel) context.getMember().getVoiceState().getAudioChannel());
     }
 }
