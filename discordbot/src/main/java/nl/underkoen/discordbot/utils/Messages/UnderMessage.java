@@ -75,12 +75,11 @@ public abstract class UnderMessage {
         lastCheck(msg, channel);
 
         Message ms = channel.getChannel().sendMessage(msg.build()).complete();
-
         DiscordBot.timer.schedule(
                 new TimerTask() {
                     @Override
                     public void run() {
-                        ms.delete();
+                        ms.delete().complete();
                     }
                 },
                 TimeUnit.MINUTES.toMillis(5)

@@ -17,6 +17,8 @@ import nl.underkoen.discordbot.utils.Messages.ErrorMessage;
 import nl.underkoen.discordbot.utils.RoleUtil;
 
 import java.util.Arrays;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Under_Koen on 30/08/2018.
@@ -51,7 +53,15 @@ public class DCommandHandler extends CommandHandler<Command<DContext>, DContext,
     @Override
     public boolean canRun(DContext context) {
         DMessage message = context.getMessage();
-        message.getMessage().delete();
+        DiscordBot.timer.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        message.getMessage().delete().complete();
+                    }
+                },
+                TimeUnit.MINUTES.toMillis(1)
+        );
 
         DMember member = context.getMember();
         Command command = context.getCommand();
